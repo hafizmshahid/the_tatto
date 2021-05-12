@@ -1,0 +1,196 @@
+name: the_tatto
+description: A new Flutter application.
+
+# The following line prevents the package from being accidentally published to
+# pub.dev using `pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.0
+  flutter_xlider: ^3.4.0
+  dotted_line: ^2.0.1
+  share: ^0.6.3+5
+  carousel_slider: ^2.3.1
+  smooth_star_rating: ^1.1.1
+  pin_code_text_field: ^1.7.1
+  url_launcher: ^5.4.10
+  flutter_staggered_grid_view: ^0.3.2
+  intl: ^0.15.7
+  flutter_calendar: ^0.0.8
+  flutter_calendar_carousel: ^1.3.10
+  http:
+  fdottedline: ^1.0.1
+  google_maps_flutter: ^0.5.27+3
+  flutter_svg: ^0.19.1
+  fluttertoast:
+  email_validator: ^1.0.0
+  shared_preferences: ^0.5.4+8
+  retrofit:
+  json_annotation:
+  logger:
+  kiwi: any
+  provider:
+  google_fonts:
+  # firebase_messaging: ^6.0.9
+  dio: ^3.0.10
+  progress_dialog: ^1.2.0
+  flutter_spinkit: "^4.1.2"
+  connectivity: ^2.0.0
+  gson: ^0.1.4
+  font_awesome_flutter: ^9.0.0
+
+
+
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  json_serializable: any
+  retrofit_generator: any
+  kiwi_generator: any
+  build_test: ^0.10.3
+  build_runner: ^1.4.0
+
+
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter.
+flutter:
+
+  fonts:
+    - family: Montserrat
+      fonts:
+        - asset: fonts/Montserrat-Black.ttf
+        - asset: fonts/Montserrat-Regular.ttf
+        - asset: fonts/Montserrat-Medium.ttf
+        - asset: fonts/Montserrat-Bold.ttf
+        - asset: fonts/Montserrat-SemiBold.ttf
+
+    - family: Dancing Script
+      fonts:
+        - asset: fonts/DancingScript-Regular.ttf
+        - asset: fonts/DancingScript-Medium.ttf
+        - asset: fonts/DancingScript-Bold.ttf
+        - asset: fonts/DancingScript-SemiBold.ttf
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  assets:
+    - images/the_barber.jpg
+    - images/forgotpassword.png
+    - images/changepassword.png
+    - images/passwordchangedone.png
+    - images/the_barber_small.png
+    - images/bg_image.jpg
+    - images/about.png
+    - images/roundprofile.png
+    - images/profileedit.png
+    - images/maplocation.jpg
+    - images/website.png
+    - images/webview.png
+    - images/paypal.png
+    - images/rozarpay.png
+    - images/stripe.png
+    - images/current_location.png
+    - images/marker.png
+    - images/smallbarber.png
+    - images/name.png
+    - images/bg_shop_name.png
+    - images/bg_artist.png
+    - images/bg_tattoo_stlye.png
+    - images/search_black.svg
+    - images/calendar.svg
+    - images/unlock.svg
+    - images/delete.svg
+    - images/location_home.svg
+    - images/filter.svg
+    - images/star.svg
+    - images/distance.svg
+    - images/home_white.svg
+    - images/location_white.svg
+    - images/notification_white.svg
+    - images/profile_white.svg
+    - images/calendar_white.svg
+    - images/sb.png
+    - images/arrow right.svg
+    - images/salon.svg
+    - images/styling.svg
+    - images/shampoo.svg
+    - images/shaving.svg
+    - images/correct.svg
+    - images/edit.svg
+    - images/location_black.svg
+    - images/go_back.svg
+    - images/location_icon.svg
+    - images/direction.svg
+    - images/phone.svg
+    - images/website.svg
+    - images/cancel.svg
+    - images/splash.png
+    - images/loginbg.png
+    - images/sp1.png
+    - images/home.svg
+    - images/top_offers.svg
+    - images/about.svg
+    - images/invitation.svg
+    - images/logout.svg
+    - images/privacy.svg
+    - images/top_services.svg
+    - images/terms-and-conditions.svg
+  # To add assets to your application, add an assets section, like this:
+  # assets:
+  #   - images/a_dot_burr.jpeg
+  #   - images/a_dot_ham.jpeg
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/assets-and-images/#resolution-aware.
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/assets-and-images/#from-packages
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/custom-fonts/#from-packages

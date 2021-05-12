@@ -1,0 +1,3 @@
+
+
+enum ViewState { kIdle, kBusy }
