@@ -4,6 +4,7 @@ import 'package:the_tatto/common/common_view.dart';
 import 'package:the_tatto/common/customwidget.dart';
 import 'package:the_tatto/drawer/drawer_only.dart';
 import 'package:the_tatto/model/topservicedata.dart';
+import 'package:the_tatto/screens/base_scaffold.dart';
 import 'package:the_tatto/screens/savelocation.dart';
 import 'package:the_tatto/separator/separator.dart';
 import 'package:flutter/material.dart';
@@ -87,206 +88,199 @@ class _TopService extends State<TopService> {
 
   @override
   Widget build(BuildContext context) {
-    return new SafeArea(
-      child: Scaffold(
+    return  BaseScaffold(
+      appBarHeading:"Top Services'" ,
+      isBackArrow: true,
+      isAppBarShow: true,
+      body: new Stack(
+        children: <Widget>[
+          new Container(
+            color:kAppPrimaryColor,
 
-        appBar: appbar(context, 'Top Services', _drawerscaffoldkey, false),
-        body: Scaffold(
-          resizeToAvoidBottomInset: true,
-          key: _drawerscaffoldkey,
-          //set gobal key defined above
-
-          drawer: new DrawerOnly(),
-          body: new Stack(
-            children: <Widget>[
-              new Container(
-                color:kAppPrimaryColor,
-
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Container(
-                      padding: const EdgeInsets.only(left: 12, right: 12),
-                      color: Colors.white,
-                      child: MySeparator(color: Colors.grey),
-                    ),
-                  /*  GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            new MaterialPageRoute(
-                                builder: (ctxt) => new SaveLocation()));
-                      },
-                      child: Container(
-                        alignment: FractionalOffset.topCenter,
-                        height: 30,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            // Flexible(
-                            //   child:
-
-                          *//*  Container(
-                                margin: const EdgeInsets.only(
-                                    top: 10.0, left: 15.0),
-                                alignment: FractionalOffset.topCenter,
-                                child: SvgPicture.asset(
-                                  "images/location_home.svg",
-                                  width: 20,
-                                  height: 20,
-                                )),
-                            // ),
-
-                            // Flexible(
-                            //   // flex:1,
-                            //   child:
-
-                            Container(
-                              // width: 120,
-                              margin:
-                                  const EdgeInsets.only(top: 10.0, left: 10.0),
-                              // transform: Matrix4.translationValues(-180.0, 0.0, 0.0),
-                              alignment: FractionalOffset.topLeft,
-                              child: Text(
-                                "vishwashanti marg, Pune",
-                                textAlign: TextAlign.center,
-                                maxLines: 1,
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: 'Montserrat'),
-                              ),
-                            ),*//*
-                            // ),
-                          ],
-                        ),
-                      ),
-                    ),*/
-                  /*  Container(
-                      padding:
-                          const EdgeInsets.only(left: 12, right: 12, top: 10),
-                      child: MySeparator(color: Colors.grey),
-                    ),*/
-                    Flexible(
-                      child: Container(
-                        color: kAppPrimaryColor,
-                        margin: EdgeInsets.only(top: 10.0, left: 8),
-                        // color: Colors.white,
-                        height: 45,
-                        child: ListView.builder(
-                          itemCount: categorydatalist.length,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            return CustomWidget(
-                              category: categorydatalist[index]['category'],
-                              index: index,
-                              isSelected: currentSelectedIndex == index,
-                              onSelect: () {
-                                setState(() {
-                                  categoryname =
-                                      categorydatalist[index]['category'];
-                                  currentSelectedIndex = index;
-                                });
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                    Flexible(
-                      child: Container(
-                        margin: EdgeInsets.only(top: 5.0),
-                        color: kAppPrimaryColor,
-                        height: 40,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Container(
-                              margin: EdgeInsets.only(left: 20, top: 10),
-                              alignment: Alignment.topLeft,
-
-                              // child:Text(categoryname.toString(),style: TextStyle(color:Colors.black,fontWeight: FontWeight.w800,fontSize: 18)),
-                              child: Text(categoryname,
-                                  style: TextStyle(
-                                      color: kPrimaryTextColor,
-                                      fontWeight: FontWeight.w600,
-                                      fontFamily: 'Montserrat',
-                                      fontSize: 16)),
-                            ),
-                           /* Container(
-                                margin: EdgeInsets.only(
-                                    left: 20, right: 20, top: 10),
-                                alignment: Alignment.topRight,
-                                child: GestureDetector(
-                                    onTap: () {
-                                      _newTaskModalBottomSheet(context);
-                                    },
-                                    child: RichText(
-                                      text: TextSpan(
-                                        children: [
-                                          TextSpan(
-                                              text: "Filter ",
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600,
-                                                fontFamily: 'Montserrat',
-                                              )),
-                                          WidgetSpan(
-                                            child: Container(
-                                              margin: EdgeInsets.only(left: 5),
-                                              child: SvgPicture.asset(
-                                                "images/filter.svg",
-                                                width: 15,
-                                                height: 15,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ))),*/
-                          ],
-                        ),
-                      ),
-                    ),
-                    Flexible(
-                      flex: 6,
-                      child: ListView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
+                  padding: const EdgeInsets.only(left: 12, right: 12),
+                  color: Colors.white,
+                  child: MySeparator(color: Colors.grey),
+                ),
+                /*  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          new MaterialPageRoute(
+                              builder: (ctxt) => new SaveLocation()));
+                    },
+                    child: Container(
+                      alignment: FractionalOffset.topCenter,
+                      height: 30,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
+                          // Flexible(
+                          //   child:
+
+                        *//*  Container(
+                              margin: const EdgeInsets.only(
+                                  top: 10.0, left: 15.0),
+                              alignment: FractionalOffset.topCenter,
+                              child: SvgPicture.asset(
+                                "images/location_home.svg",
+                                width: 20,
+                                height: 20,
+                              )),
+                          // ),
+
+                          // Flexible(
+                          //   // flex:1,
+                          //   child:
+
                           Container(
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemBuilder: (BuildContext context, int index) {
-                                return new TopServiceDataNew(
-                                  category: categorydatalist[index]['category'],
-                                  dark_color: categorydatalist[index]
-                                      ['dark_color'],
-                                  light_color: categorydatalist[index]
-                                      ['light_color'],
-                                );
-                              },
-                              itemCount: categorydatalist.length,
+                            // width: 120,
+                            margin:
+                                const EdgeInsets.only(top: 10.0, left: 10.0),
+                            // transform: Matrix4.translationValues(-180.0, 0.0, 0.0),
+                            alignment: FractionalOffset.topLeft,
+                            child: Text(
+                              "vishwashanti marg, Pune",
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'Montserrat'),
                             ),
-                          ),
+                          ),*//*
+                          // ),
                         ],
                       ),
                     ),
-                  ],
+                  ),*/
+                /*  Container(
+                    padding:
+                        const EdgeInsets.only(left: 12, right: 12, top: 10),
+                    child: MySeparator(color: Colors.grey),
+                  ),*/
+                Flexible(
+                  child: Container(
+                    color: kAppPrimaryColor,
+                    margin: EdgeInsets.only(top: 10.0, left: 8),
+                    // color: Colors.white,
+                    height: 45,
+                    child: ListView.builder(
+                      itemCount: categorydatalist.length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        return CustomWidget(
+                          category: categorydatalist[index]['category'],
+                          index: index,
+                          isSelected: currentSelectedIndex == index,
+                          onSelect: () {
+                            setState(() {
+                              categoryname =
+                              categorydatalist[index]['category'];
+                              currentSelectedIndex = index;
+                            });
+                          },
+                        );
+                      },
+                    ),
+                  ),
                 ),
+                Flexible(
+                  child: Container(
+                    margin: EdgeInsets.only(top: 5.0),
+                    color: kAppPrimaryColor,
+                    height: 40,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Container(
+                          margin: EdgeInsets.only(left: 20, top: 10),
+                          alignment: Alignment.topLeft,
 
-                // ],
-              ),
+                          // child:Text(categoryname.toString(),style: TextStyle(color:Colors.black,fontWeight: FontWeight.w800,fontSize: 18)),
+                          child: Text(categoryname,
+                              style: TextStyle(
+                                  color: kPrimaryTextColor,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'Montserrat',
+                                  fontSize: 16)),
+                        ),
+                        /* Container(
+                              margin: EdgeInsets.only(
+                                  left: 20, right: 20, top: 10),
+                              alignment: Alignment.topRight,
+                              child: GestureDetector(
+                                  onTap: () {
+                                    _newTaskModalBottomSheet(context);
+                                  },
+                                  child: RichText(
+                                    text: TextSpan(
+                                      children: [
+                                        TextSpan(
+                                            text: "Filter ",
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                              fontFamily: 'Montserrat',
+                                            )),
+                                        WidgetSpan(
+                                          child: Container(
+                                            margin: EdgeInsets.only(left: 5),
+                                            child: SvgPicture.asset(
+                                              "images/filter.svg",
+                                              width: 15,
+                                              height: 15,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ))),*/
+                      ],
+                    ),
+                  ),
+                ),
+                Flexible(
+                  flex: 6,
+                  child: ListView(
+                    children: <Widget>[
+                      Container(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (BuildContext context, int index) {
+                            return new TopServiceDataNew(
+                              category: categorydatalist[index]['category'],
+                              name: "Name",
+                              userId: 1,
+                              imageUrl: "https://homepages.cae.wisc.edu/~ece533/images/airplane.png",
+                              time: "10:00",
+                              address: "About lasdf",
+                            );
+                          },
+                          itemCount: categorydatalist.length,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
 
-              new Container(child: Body())
-
-              // new Container(child: Body(
-              //
-              // ))
-            ],
+            // ],
           ),
-        ),
+
+          new Container(child: Body())
+
+          // new Container(child: Body(
+          //
+          // ))
+        ],
       ),
     );
   }

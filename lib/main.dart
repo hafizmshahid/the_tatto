@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
      debugShowCheckedModeBanner: false,
+      color: Colors.black,
       home: new SplashScreen(),
       routes: <String, WidgetBuilder>{
         '/HomeScreen': (BuildContext context) => new LoginScreen()

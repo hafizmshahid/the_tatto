@@ -111,10 +111,6 @@ class _SearchResultShowScreen extends State<SearchResultShowScreen> {
                               itemBuilder: (BuildContext context, int index) {
                                 return new TopServiceDataNew(
                                   category: widget.categoryname,
-                                  dark_color: categorydatalist[index]
-                                      ['dark_color'],
-                                  light_color: categorydatalist[index]
-                                      ['light_color'],
                                 );
                               },
                               itemCount: categorydatalist.length,

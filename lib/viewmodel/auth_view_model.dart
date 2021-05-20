@@ -2,7 +2,11 @@ import "package:flutter/material.dart";
 import 'package:http/http.dart' as _http;
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:the_tatto/ResponseModel/AboutData.dart';
+import 'package:the_tatto/ResponseModel/ArtistSearchList.dart';
 import 'package:the_tatto/ResponseModel/StyleList.dart';
+import 'package:the_tatto/model/LocationSearchList.dart';
+import 'package:the_tatto/model/ShopSearchList.dart';
 import 'package:the_tatto/utils/app_api_ref.dart';
 import 'package:the_tatto/constant/appconstant.dart';
 import 'dart:convert' as JSON;
@@ -47,14 +51,22 @@ class AuthViewModel extends BaseViewModel {
       signUpPhone,
       signUpName,
       signInEmail,
+      artistSearchValue,
+      locationSearchListValue,
+      shopSearchValue,
       loginResponseSharePreference,
       forgetEmail,
       signInPassword;
+  //int aboutDataID ;
   var authMsg;
   bool authError = true;
   bool isSignIn = false;
   bool isLogout = false;
   bool isStyleList = false;
+  bool isArtistList = false;
+  bool isLocationSearchList = false;
+  bool isAboutDataList = false;
+  bool isShopSearchList = false;
   bool isSignUp = false;
   bool isForget = false;
   List titleList = [
@@ -66,11 +78,16 @@ class AuthViewModel extends BaseViewModel {
     "Japanese Tattoo Style",
     "Blackwork Tattoo Style"
   ];
-  StyleList styleList;
+  List<StyleList> styleList;
+  List<ArtistSearchList> artistSearchList;
+  List<ShopSearchList> shopSearchList;
+  List<LocationSearchList> locationSearchList;
+  List <AboutData> aboutDataList;
 
-  GlobalKey<FormState> signInForm = GlobalKey<FormState>();
-  GlobalKey<FormState> signUpForm = GlobalKey<FormState>();
-  GlobalKey<FormState> forgetForm = GlobalKey<FormState>();
+
+  // GlobalKey<FormState> signInForm = GlobalKey<FormState>();
+  // GlobalKey<FormState> signUpForm = GlobalKey<FormState>();
+  // GlobalKey<FormState> forgetForm = GlobalKey<FormState>();
 
   bool validateAndSave({
     @required FormState formstate,
@@ -83,18 +100,70 @@ class AuthViewModel extends BaseViewModel {
     return false;
   }
 
-  Future<void> getStyleList() async {
-    //final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  Future<void> validateAndSubmitSignIn() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String email;
+    setState(ViewState.kBusy);
+    isSignIn = false;
+    try {
+    //  if (validateAndSave(formstate: signInForm.currentState)) {
+        print(
+            "------------------Email: $signInEmail  Password: $signInPassword --------------");
+        final response = await http.post(kSignInApi,
+            body: {"email": signInEmail, "password": signInPassword});
+        var body = json.decode(response.body);
+        email= body['email'];
+        print("-----------------$body------------------");
+        print("-----------------$email------------------");
+        if (email != null) {
+          setState(ViewState.kIdle);
+          prefs.setString(kLoginPreferenceId, json.encode(body));
+          loginResponseSharePreference = prefs.getString(kLoginPreferenceId);
+          //   print("---------------------name :${json.decode(loginResponseSharePreference)['response'][0]['username']}-----------------");
+          isSignIn = true;
+          authError = false;
+          authMsg = "Login Successfully";
+          // //   authMsg = body['message'];
+          //   prefs.setString(kLoginId, json.encode(body));
+          // prefs.setBool(kIsLogin, true);
+        } else {
+          authError = true;
+          authMsg = body['detail'];
+          print(
+              "-------------------Sign  in not success ${authMsg = body['detail']}----------------");
+        }
+     // }
+
+      print("not success");
+      authError = false;
+    } catch (e) {
+      // print("-------------------Sign  in not success ${e.message.toString()}----------------");
+      //  authMsg = "Error ${e.message.toString()}";
+      authError = true;
+    }
+    setState(ViewState.kIdle);
+  }
+  Future<void> validateAndSubmitSignUp() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(ViewState.kBusy);
     try {
-      final response = await http.get(kStylesApi);
+      // if (validateAndSave(formstate: signUpForm.currentState)) {
+      print(
+          "------------------Name :$signUpName Email: $signUpEmail Phone No :$signUpPhone Password : $signUpPassword Phone--------------");
+      final response = await http.post(kSignUpApi, body: {
+        "username": signUpName,
+        "email": signUpEmail,
+        "phone_number": signUpPhone,
+        "password": signUpPassword
+      });
       var body = json.decode(response.body);
-      print("-----------------$body------------------");
-      if (body['status']) {
+      print("-----------------asdfdas$body------------------");
+      if (!body['error']) {
         print("-----------------$body------------------");
-        styleList = body;
+        prefs.setString(kLoginPreferenceId, json.encode(body));
         setState(ViewState.kIdle);
-        isStyleList = true;
+        isSignUp = true;
         authError = false;
         authMsg = body['message'];
         /*  prefs.setString(kLoginId, json.encode(body));
@@ -103,73 +172,69 @@ class AuthViewModel extends BaseViewModel {
         authError = true;
         authMsg = body['message'];
         print(
-            "-------------------Sign  in not success ${authMsg = body['message']}----------------");
+            "-------------------Sign up not success ${authMsg = body['message']}----------------");
       }
-
-      print("not success");
-      authError = false;
-    } catch (e) {
-      //print("-------------------Sign  in not success ${e.message.toString()}----------------");
-      authMsg = "Error ${e.message.toString()}";
-      authError = true;
-    }
-    setState(ViewState.kIdle);
-  }
-
-  Future<void> validateAndSubmitSignIn() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(ViewState.kBusy);
-    try {
-      if (validateAndSave(formstate: signInForm.currentState)) {
-        print(
-            "------------------Email: $signInEmail  Password : $signInPassword --------------");
-        final response = await http.post(kSignInApi,
-            body: {"email": signInEmail, "password": signInPassword});
-        var body = json.decode(response.body);
-        print("-----------------$body------------------");
-        if (!body['error']) {
-          //  print("-----------------$body------------------");
-          setState(ViewState.kIdle);
-          prefs.setString(kLoginPreferenceId, json.encode(body));
-          loginResponseSharePreference = prefs.getString(kLoginPreferenceId);
-          print(
-              "---------------------name :${json.decode(loginResponseSharePreference)['response'][0]['username']}-----------------");
-          isSignIn = true;
-          authError = false;
-          authMsg = body['message'];
-          /*  prefs.setString(kLoginId, json.encode(body));
-          prefs.setBool(kIsLogin, true);*/
-        } else {
-          authError = true;
-          authMsg = body['message'];
-          print(
-              "-------------------Sign  in not success ${authMsg = body['message']}----------------");
-        }
-      } else {
+      /* } else {
         authMsg = "Please fill all field";
-      }
+      }*/
       print("not success");
       authError = false;
     } catch (e) {
       print(
-          "-------------------Sign  in not success ${e.message.toString()}----------------");
+          "-------------------Sign up not success ${e.message.toString()}----------------");
       authMsg = "Error ${e.message.toString()}";
       authError = true;
     }
     setState(ViewState.kIdle);
   }
-
+  Future<void> validateAndSubmitForget() async {
+    //final SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(ViewState.kBusy);
+    try {
+      // if (validateAndSave(formstate: signUpForm.currentState)) {
+      print("------------------Email: $forgetEmail--------------");
+      final response = await http.post(kSignUpApi, body: {
+        "email": forgetEmail,
+      });
+      var body = json.decode(response.body);
+      print("-----------------$body------------------");
+      if (body['status']) {
+        print("-----------------$body------------------");
+        setState(ViewState.kIdle);
+        isForget = true;
+        authError = false;
+        authMsg = body['message'];
+        /*  prefs.setString(kLoginId, json.encode(body));
+          prefs.setBool(kIsLogin, true);*/
+      } else {
+        authError = true;
+        authMsg = body['message'];
+        print(
+            "-------------------Sign up not success ${authMsg = body['message']}----------------");
+      }
+      /*   } else {
+        authMsg = "Please fill all field";
+      }*/
+      print("not success");
+      authError = false;
+    } catch (e) {
+      print(
+          "-------------------Sign up not success ${e.message.toString()}----------------");
+      authMsg = "Error ${e.message.toString()}";
+      authError = true;
+    }
+    setState(ViewState.kIdle);
+  }
   Future<void> getUserLogout() async {
     String strTokenRefresh =
-        json.decode(loginResponseSharePreference)['response'][0]['tokens']
-            ['refresh'];
+    json.decode(loginResponseSharePreference)['tokens']["refresh"];
     setState(ViewState.kBusy);
     try {
       print("------------------refresh:$strTokenRefresh--------------");
-      final response = await http.post(kLogoutApi, body: {"refresh": strTokenRefresh});
+      final response = await http.post("https://tattooarts.herokuapp.com/auth/logout/", body: {"refresh":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYyMTU3Mzc1NywianRpIjoiNDFjZWE1M2U2NzMxNDdmNjg5ZTQyM2U5ZGY4Y2MyODYiLCJ1c2VyX2lkIjoyfQ.epIN3p76YgB_nJTbhQeY4kemkFz0xSt6lp81EKVMGIE"});
       var body = json.decode(response.body);
-      print("-----------------dsafd ad $body------------------");
-      if (!body['error']) {
+      print("-----------------logout $body------------------");
+     /* if (!body['error']) {
         setState(ViewState.kIdle);
         isLogout = true;
         authError = false;
@@ -179,7 +244,7 @@ class AuthViewModel extends BaseViewModel {
         authMsg = body['detail'];
         print(
             "-------------------Sign  in not success ${authMsg = body['message']}----------------");
-      }
+      }*/
 
       print("not success");
       authError = false;
@@ -192,85 +257,200 @@ class AuthViewModel extends BaseViewModel {
     setState(ViewState.kIdle);
   }
 
-  Future<void> validateAndSubmitSignUp() async {
-    //final SharedPreferences prefs = await SharedPreferences.getInstance();
+  Future<void> getStyleList() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    isStyleList = false;
     setState(ViewState.kBusy);
     try {
-      if (validateAndSave(formstate: signUpForm.currentState)) {
-        print(
-            "------------------Name :$signUpName Email: $signUpEmail Phone No :$signUpPhone Password : $signUpPassword Phone--------------");
-        final response = await http.post(kSignUpApi, body: {
-          "username": signUpName,
-          "email": signUpEmail,
-          "phone_number": signUpPhone,
-          "password": signUpPassword
-        });
-        var body = json.decode(response.body);
-        print("-----------------asdfdas$body------------------");
-        if (!body['error']) {
-          print("-----------------$body------------------");
-          setState(ViewState.kIdle);
-          isSignUp = true;
-          authError = false;
-          authMsg = body['message'];
-          /*  prefs.setString(kLoginId, json.encode(body));
-          prefs.setBool(kIsLogin, true);*/
-        } else {
-          authError = true;
-          authMsg = body['message'];
-          print(
-              "-------------------Sign up not success ${authMsg = body['message']}----------------");
-        }
+      final response = await http.get(kStylesApi);
+      var body = json.decode(response.body);
+      //  print("-----------------$body------------------");
+      if (body != null) {
+        print("-----------------Response : ${response.body}------------------");
+        styleList = styleListFromJson(response.body);
+        print("-----------------styleList : ${styleList.length}------------------");
+        setState(ViewState.kIdle);
+        isStyleList = true;
+        authError = false;
+        // authMsg = body['message'];
+        //   prefs.setString(kLoginId, json.encode(body));
+        //   prefs.setBool(kIsLogin, true);
+        prefs.setString(kLoginPreferenceId, json.encode(body));
+        loginResponseSharePreference = prefs.getString(kLoginPreferenceId);
       } else {
-        authMsg = "Please fill all field";
+        authError = true;
+        // authMsg = body['message'];
+        print(
+            "-------------------Sign  in not success ${authMsg = body['message']}----------------");
       }
+
       print("not success");
       authError = false;
     } catch (e) {
-      print(
-          "-------------------Sign up not success ${e.message.toString()}----------------");
-      authMsg = "Error ${e.message.toString()}";
+      //print("-------------------Sign  in not success ${e.message.toString()}----------------");
+      authMsg = "Error ";
+      // authMsg = "Error ${e.message.toString()}";
+      authError = true;
+    }
+    setState(ViewState.kIdle);
+  }
+  Future<void> getArtistList() async {
+    isArtistList= false;
+   // final SharedPreferences prefs = await SharedPreferences.getInstance();\artistSearchValue
+    print("-----------------artistSearchValue $artistSearchValue------------------");
+    setState(ViewState.kBusy);
+    try {
+      final response = await http.get("https://tattooarts.herokuapp.com/artistsearch/?search=$artistSearchValue");
+      var body = json.decode(response.body);
+      //  print("-----------------$body------------------");
+      if (body != null) {
+        print("-----------------Response : ${response.body}------------------");
+        artistSearchList = artistSearchListFromJson(response.body);
+        print("-----------------styleList : ${artistSearchList.length}------------------");
+        setState(ViewState.kIdle);
+        isArtistList = true;
+        authError = false;
+        // authMsg = body['message'];
+        //   prefs.setString(kLoginId, json.encode(body));
+        //   prefs.setBool(kIsLogin, true);
+       /* prefs.setString(kLoginPreferenceId, json.encode(body));
+        loginResponseSharePreference = prefs.getString(kLoginPreferenceId);*/
+      } else {
+        authError = true;
+        // authMsg = body['message'];
+        print(
+            "-------------------Sign  in not success ${authMsg = body['message']}----------------");
+      }
+
+      print("not success");
+      authError = false;
+    } catch (e) {
+      //print("-------------------Sign  in not success ${e.message.toString()}----------------");
+      authMsg = "Error ";
+      // authMsg = "Error ${e.message.toString()}";
+      authError = true;
+    }
+    setState(ViewState.kIdle);
+  }
+  Future<void> getShopNameList() async {
+    isShopSearchList = false;
+    // final SharedPreferences prefs = await SharedPreferences.getInstance();\artistSearchValue
+    print("-----------------artistSearchValue $shopSearchValue------------------");
+    setState(ViewState.kBusy);
+    try {
+      final response = await http.get("https://tattooarts.herokuapp.com/shopsearch/?search=$shopSearchValue");
+      var body = json.decode(response.body);
+        print("-----------------$body------------------");
+      if (body != null) {
+        print("-----------------Response : ${response.body}------------------");
+        shopSearchList = shopSearchListFromJson(response.body);
+        print("-----------------styleList : ${shopSearchList.length}------------------");
+        setState(ViewState.kIdle);
+        isShopSearchList = true;
+        authError = false;
+        // authMsg = body['message'];
+        //   prefs.setString(kLoginId, json.encode(body));
+        //   prefs.setBool(kIsLogin, true);
+        /* prefs.setString(kLoginPreferenceId, json.encode(body));
+        loginResponseSharePreference = prefs.getString(kLoginPreferenceId);*/
+      } else {
+        authError = true;
+        // authMsg = body['message'];
+        print(
+            "-------------------Sign  in not success ${authMsg = body['message']}----------------");
+      }
+
+      print("not success");
+      authError = false;
+    } catch (e) {
+      //print("-------------------Sign  in not success ${e.message.toString()}----------------");
+      authMsg = "Error ";
+      // authMsg = "Error ${e.message.toString()}";
+      authError = true;
+    }
+    setState(ViewState.kIdle);
+  }
+  Future<void> getLocationSearchList() async {
+    isLocationSearchList = false;
+    // final SharedPreferences prefs = await SharedPreferences.getInstance();\artistSearchValue
+    print("-----------------locationSearchListValue $locationSearchListValue------------------");
+    setState(ViewState.kBusy);
+    try {
+      final response = await http.get("https://tattooarts.herokuapp.com/locationsearch/?search=$locationSearchListValue");
+      var body = json.decode(response.body);
+      //  print("-----------------$body------------------");
+      if (body != null) {
+        print("-----------------Response : ${response.body}------------------");
+        locationSearchList = locationSearchListFromJson(response.body);
+        print("-----------------styleList : ${locationSearchList.length}------------------");
+        setState(ViewState.kIdle);
+        isLocationSearchList = true;
+        authError = false;
+        // authMsg = body['message'];
+        //   prefs.setString(kLoginId, json.encode(body));
+        //   prefs.setBool(kIsLogin, true);
+        /* prefs.setString(kLoginPreferenceId, json.encode(body));
+        loginResponseSharePreference = prefs.getString(kLoginPreferenceId);*/
+      } else {
+        authError = true;
+        // authMsg = body['message'];
+        print(
+            "-------------------Sign  in not success ${authMsg = body['message']}----------------");
+      }
+
+      print("not success");
+      authError = false;
+    } catch (e) {
+      //print("-------------------Sign  in not success ${e.message.toString()}----------------");
+      authMsg = "Error ";
+      // authMsg = "Error ${e.message.toString()}";
       authError = true;
     }
     setState(ViewState.kIdle);
   }
 
-  Future<void> validateAndSubmitForget() async {
-    //final SharedPreferences prefs = await SharedPreferences.getInstance();
+  Future<void> getAboutDataList( int aboutDataID) async {
+    isAboutDataList = false;
+    // final SharedPreferences prefs = await SharedPreferences.getInstance();\artistSearchValue
+    print("-----------------aboutDataID $aboutDataID------------------");
     setState(ViewState.kBusy);
     try {
-      if (validateAndSave(formstate: signUpForm.currentState)) {
-        print("------------------Email: $forgetEmail--------------");
-        final response = await http.post(kSignUpApi, body: {
-          "email": forgetEmail,
-        });
-        var body = json.decode(response.body);
-        print("-----------------$body------------------");
-        if (body['status']) {
-          print("-----------------$body------------------");
-          setState(ViewState.kIdle);
-          isForget = true;
-          authError = false;
-          authMsg = body['message'];
-          /*  prefs.setString(kLoginId, json.encode(body));
-          prefs.setBool(kIsLogin, true);*/
-        } else {
-          authError = true;
-          authMsg = body['message'];
-          print(
-              "-------------------Sign up not success ${authMsg = body['message']}----------------");
-        }
+      final response = await http.get("https://tattooarts.herokuapp.com/Shop_artist/$aboutDataID");
+      var body = json.decode(response.body);
+      //  print("-----------------$body------------------");
+      if (body != null) {
+        print("-----------------Response : ${response.body}------------------");
+
+        aboutDataList = aboutDataFromJson(response.body);
+        print("-----------------isAboutDataList : ${aboutDataList.length}------------------");
+        setState(ViewState.kIdle);
+        isAboutDataList = true;
+        authError = false;
+        // authMsg = body['message'];
+        //   prefs.setString(kLoginId, json.encode(body));
+        //   prefs.setBool(kIsLogin, true);
+        /* prefs.setString(kLoginPreferenceId, json.encode(body));
+        loginResponseSharePreference = prefs.getString(kLoginPreferenceId);*/
       } else {
-        authMsg = "Please fill all field";
+        authError = true;
+        // authMsg = body['message'];
+        print(
+            "-------------------Sign  in not success ${authMsg = body['message']}----------------");
       }
+
       print("not success");
       authError = false;
     } catch (e) {
-      print(
-          "-------------------Sign up not success ${e.message.toString()}----------------");
-      authMsg = "Error ${e.message.toString()}";
+      //print("-------------------Sign  in not success ${e.message.toString()}----------------");
+      authMsg = "Error ";
+      // authMsg = "Error ${e.message.toString()}";
       authError = true;
     }
     setState(ViewState.kIdle);
   }
+
+
+
+
+
 }

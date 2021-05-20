@@ -12,8 +12,10 @@ import 'package:the_tatto/model/offerdata.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'package:progress_dialog/progress_dialog.dart';
+import 'package:the_tatto/screens/base_scaffold.dart';
 import 'package:the_tatto/utils/app_color.dart';
 
 /*
@@ -25,147 +27,111 @@ void main() {
 }*/
 
 class TopOffers extends StatefulWidget {
-
   @override
   _TopOffers createState() => new _TopOffers();
 }
 
-
 class _TopOffers extends State<TopOffers> {
   ProgressDialog pr;
-  List<Data> offerdataList= new List<Data>();
-  List<Offerbanner> banner_image= new List<Offerbanner>();
-  List<String> image12= new List<String>();
+  List<Data> offerdataList = new List<Data>();
+  List<Offerbanner> banner_image = new List<Offerbanner>();
+  List<String> image12 = new List<String>();
 
   int index = 0;
 
-
   @override
-  void initState()  {
+  void initState() {
     super.initState();
     pr = new ProgressDialog(context);
     pr.style(
       message: 'Loading Data...',
       borderRadius: 5.0,
       backgroundColor: Colors.white,
-      progressWidget:SpinKitFadingCircle(color:Color(0xFFe06287)),
+      progressWidget: SpinKitFadingCircle(color: Color(0xFFe06287)),
       elevation: 10.0,
       insetAnimCurve: Curves.easeInOut,
       progress: 0.0,
       maxProgress: 100.0,
       progressTextStyle: TextStyle(
-          color: Colors.black, fontSize: 14.0, fontWeight: FontWeight.w600,fontFamily: 'Montserrat'),
+          color: Colors.black,
+          fontSize: 14.0,
+          fontWeight: FontWeight.w600,
+          fontFamily: 'Montserrat'),
       messageTextStyle: TextStyle(
-          color: Colors.black, fontSize: 14.0, fontWeight: FontWeight.w600,fontFamily: 'Montserrat'),
-
+          color: Colors.black,
+          fontSize: 14.0,
+          fontWeight: FontWeight.w600,
+          fontFamily: 'Montserrat'),
     );
     PreferenceUtils.init();
 
-
     // CheckNetwork();
-
-
-
-
-
-
-
-
-
   }
 
-
-  void CheckNetwork() async{
+  void CheckNetwork() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile) {
       pr.show();
       CallApiforBanner();
       CallApiforOfferData();
-
     } else if (connectivityResult == ConnectivityResult.wifi) {
       pr.show();
       CallApiforBanner();
       CallApiforOfferData();
-
-
-    }else{
-
+    } else {
       toastMessage("No Internet Connection");
-
     }
-
   }
 
-  void CallApiforBanner(){
+  void CallApiforBanner() {
     pr.hide();
-    RestClient  (Retro_Api().Dio_Data()).offersbanner().then((response){
-
+    RestClient(Retro_Api().Dio_Data()).offersbanner().then((response) {
       setState(() {
-        if(response.success = true){
+        if (response.success = true) {
           print(response.data.length);
           banner_image.addAll(response.data);
           image12.clear();
-          for(int i=0; i<banner_image.length; i++)
-          {
+          for (int i = 0; i < banner_image.length; i++) {
             image12.add(banner_image[i].imagePath + banner_image[i].image);
           }
           int length123 = image12.length;
           print("StringlistSize:$length123");
           pr.hide();
-        }
-        else {
+        } else {
           pr.hide();
           toastMessage("No Data");
         }
-
       });
-
     }).catchError((Object obj) {
       pr.hide();
       print("error:$obj");
       print(obj.runtimeType);
       toastMessage("Internal Server Error");
     });
-
-
-
-
   }
 
-
-  void CallApiforOfferData(){
+  void CallApiforOfferData() {
     pr.hide();
-    RestClient  (Retro_Api().Dio_Data()).coupon().then((response){
-
+    RestClient(Retro_Api().Dio_Data()).coupon().then((response) {
       setState(() {
-
-        if(response.success = true){
+        if (response.success = true) {
           print(response.data.length);
           offerdataList.addAll(response.data);
           int size = offerdataList.length;
           print("offersize:$size");
           pr.hide();
-        }
-        else {
+        } else {
           pr.hide();
           toastMessage("No Data");
         }
-
       });
-
     }).catchError((Object obj) {
       pr.hide();
       print("error:$obj");
       print(obj.runtimeType);
       toastMessage("Internal Server Error");
     });
-
   }
-
-
-
-
-
 
   CarouselSlider carouselSlider;
 
@@ -174,16 +140,24 @@ class _TopOffers extends State<TopOffers> {
     'images/the_barber_small.png',
     'images/the_barber_small.png',
     'images/the_barber_small.png',
-
   ];
 
   List offerdatalist = [
-    {"discount": "10%", "dark_color":const Color(0xFFffb5cc) , "light_color": const Color(0xFFffc8de),},
-    {"discount": "50%", "dark_color": const Color(0xFFb5b8ff), "light_color": const Color(0xFFc8caff)},
-    {"discount": "30%", "dark_color": const Color(0xFFffb5b5), "light_color": const Color(0xFFffc8c8)},
-
-
-
+    {
+      "discount": "10%",
+      "dark_color": const Color(0xFFffb5cc),
+      "light_color": const Color(0xFFffc8de),
+    },
+    {
+      "discount": "50%",
+      "dark_color": const Color(0xFFb5b8ff),
+      "light_color": const Color(0xFFc8caff)
+    },
+    {
+      "discount": "30%",
+      "dark_color": const Color(0xFFffb5b5),
+      "light_color": const Color(0xFFffc8c8)
+    },
   ];
 
   List<T> map<T>(List list, Function handler) {
@@ -194,161 +168,128 @@ class _TopOffers extends State<TopOffers> {
     return result;
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
   final GlobalKey<ScaffoldState> _drawerscaffoldkey =
-  new GlobalKey<ScaffoldState>();
+      new GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
-
-
     dynamic screenHeight = MediaQuery.of(context).size.height;
     dynamic screenwidth = MediaQuery.of(context).size.width;
 
-
     // pr.show();
 
-   return new SafeArea(
-
-      child:  Scaffold(
-          appBar: appbar(context, 'Top Offers', _drawerscaffoldkey,false),
-          resizeToAvoidBottomInset: true,
-          backgroundColor: kAppPrimaryColor,
-          key: _drawerscaffoldkey,
-          //set gobal key defined above
-
-          drawer: new DrawerOnly(),
-
-          body: new Stack(
+    return BaseScaffold(
+        appBarHeading: "Top Offers",
+        isBackArrow: true,
+        backgroundColor: kAppPrimaryColor,
+        isAppBarShow: true,
+        body:  Container(
+          child: Stack(
             children: <Widget>[
               new SingleChildScrollView(
                 child: Column(
                   // mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-
-
-
                     Container(
-
-
                       width: 400,
                       height: screenHeight * 0.25,
                       alignment: Alignment.topCenter,
                       color: Colors.transparent,
-                      margin: EdgeInsets.only(top:10,left: 20,right: 20),
-
-
+                      margin: EdgeInsets.only(top: 10, left: 20, right: 20),
                       child: Container(
                         child: Stack(
                           alignment: Alignment.bottomCenter,
                           children: <Widget>[
-
-
                             CarouselSlider(
-
-
                               options: CarouselOptions(
                                 height: 180,
                                 viewportFraction: 1.0,
-                                onPageChanged: (index,index1) {
+                                onPageChanged: (index, index1) {
                                   setState(() {
                                     _current = index;
                                   });
                                 },
-
-
-
-
-                              ) ,
+                              ),
                               items: imgList.map((imgUrl) {
                                 return Builder(
                                   builder: (BuildContext context) {
                                     return Container(
+                                        child: Stack(
+                                      children: <Widget>[
+                                        Material(
+                                          color: kAppPrimaryColor,
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                          elevation: 2.0,
+                                          clipBehavior:
+                                              Clip.antiAliasWithSaveLayer,
+                                          type: MaterialType.transparency,
+                                          child: Image.asset(
+                                            imgUrl,
+                                            height: 200,
+                                            width: 550,
+                                            fit: BoxFit.fitWidth,
+                                          ),
+                                        ),
 
-                                        child:Stack(
+                                        Center(
+                                          // child:Row(
+                                          // children: map<Widget>(banner_image, (index, url) {
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                margin:
+                                                    EdgeInsets.only(top: 20),
 
-                                          children: <Widget>[
-
-                                            Material(
-                                              color: kAppPrimaryColor,
-                                              borderRadius: BorderRadius.circular(10.0),
-                                              elevation: 2.0,
-                                              clipBehavior: Clip.antiAliasWithSaveLayer,
-                                              type: MaterialType.transparency,
-                                              child: Image.asset( imgUrl,
-
-                                                height: 200,
-                                                width: 550,
-                                                fit: BoxFit.fitWidth,
+                                                alignment: Alignment.center,
+                                                // child:  Text(banner_image[_current].title,style:
+                                                child: Text(
+                                                  "The Massive Discount upto ",
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.w800,
+                                                      fontFamily: 'Montserrat'),
+                                                ),
                                               ),
+                                              Container(
+                                                margin:
+                                                    EdgeInsets.only(top: 10),
 
-
-                                            ),
-
-
-
-
-                                            Center(
-
-
-
-
-                                              // child:Row(
-                                              // children: map<Widget>(banner_image, (index, url) {
-                                              child: Column(
-                                                children: [
-
-                                                  Container(
-                                                    margin: EdgeInsets.only(top: 20),
-
-                                                    alignment: Alignment.center,
-                                                    // child:  Text(banner_image[_current].title,style:
-                                                    child:  Text("The Massive Discount upto ",style:
-                                                    TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.w800,fontFamily: 'Montserrat'),),
-
-
-                                                  ),
-                                                  Container(
-                                                    margin: EdgeInsets.only(top: 10),
-
-                                                    alignment: Alignment.center,
-                                                    // child:  Text(banner_image[_current].discount.toString()+ "%",style:
-                                                    child:  Text('50'+ "%",style:
-                                                    TextStyle(color: Colors.white,fontSize: 45,fontWeight: FontWeight.w800,fontFamily: 'Montserrat'),),
-
-
-                                                  ),
-                                                  Container(
-                                                    margin: EdgeInsets.only(top: 10,bottom: 5),
-
-                                                    alignment: Alignment.center,
-                                                    child:  Text('Is Coming Soon',style:
-                                                    TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.w800,fontFamily: 'Montserrat'),),
-
-
-                                                  ),
-
-                                                ],
-
+                                                alignment: Alignment.center,
+                                                // child:  Text(banner_image[_current].discount.toString()+ "%",style:
+                                                child: Text(
+                                                  '50' + "%",
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 45,
+                                                      fontWeight:
+                                                          FontWeight.w800,
+                                                      fontFamily: 'Montserrat'),
+                                                ),
                                               ),
+                                              Container(
+                                                margin: EdgeInsets.only(
+                                                    top: 10, bottom: 5),
+                                                alignment: Alignment.center,
+                                                child: Text(
+                                                  'Is Coming Soon',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.w800,
+                                                      fontFamily: 'Montserrat'),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
 
+                                          // }),
+                                        ),
 
-                                              // }),
-                                            ),
-
-
-                                            /*   child:Column(
+                                        /*   child:Column(
 
 
                                               children: <Widget>[
@@ -384,20 +325,13 @@ class _TopOffers extends State<TopOffers> {
                                             ),
                                          */
 
-                                            // )
-
-                                          ],
-                                        )
-
-
-
-                                    );
+                                        // )
+                                      ],
+                                    ));
                                   },
                                 );
                               }).toList(),
                             ),
-
-
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: map<Widget>(imgList, (index, url) {
@@ -405,38 +339,32 @@ class _TopOffers extends State<TopOffers> {
                                   alignment: Alignment.bottomCenter,
                                   width: 9.0,
                                   height: 9.0,
-                                  margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+                                  margin: EdgeInsets.symmetric(
+                                      vertical: 10.0, horizontal: 2.0),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: _current == index ? Color(0xFFe06287) : Color(0xFFffffff),
+                                    color: _current == index
+                                        ? Color(0xFFe06287)
+                                        : Color(0xFFffffff),
                                   ),
                                 );
                               }),
                             ),
-
-
                           ],
                         ),
                       ),
                     ),
-
-
-
-
                     Container(
-
-                      margin: EdgeInsets.only(top: 5.0,left: 10,right: 10,bottom: 60),
+                      margin: EdgeInsets.only(
+                          top: 5.0, left: 10, right: 10, bottom: 60),
                       color: Colors.white,
 
-
-                      child:Container(
-                        child:ListView.builder(
-
+                      child: Container(
+                        child: ListView.builder(
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
                           itemCount: offerdatalist.length,
                           itemBuilder: (BuildContext context, int index) {
-
                             /*Color light_color;
                         Color dark_color;
 
@@ -470,9 +398,6 @@ class _TopOffers extends State<TopOffers> {
 
 
                          }*/
-
-
-
 
                             /*  return new Container(
                             color: Colors.white,
@@ -580,9 +505,6 @@ class _TopOffers extends State<TopOffers> {
                             );
                           },
                         ),
-
-
-
                       ),
 
                       // height: 50,
@@ -590,27 +512,14 @@ class _TopOffers extends State<TopOffers> {
                   ],
                 ),
               ),
-
               new Container(child: Body())
-
-
-
-
-
             ],
-
-          )
-
-
-
-      ),
-    );
-
-
+          ),
+        ));
   }
 
-  void toastMessage(String message){
-  /*  Fluttertoast.showToast(
+  void toastMessage(String message) {
+    /*  Fluttertoast.showToast(
       msg: message,
       toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.BOTTOM,
@@ -621,16 +530,13 @@ class _TopOffers extends State<TopOffers> {
   }
 }
 
-
 class Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
-
         child: CustomView(),
-
       ),
     );
   }

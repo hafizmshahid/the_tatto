@@ -3,6 +3,7 @@ import 'package:the_tatto/common/common_view.dart';
 import 'package:the_tatto/drawer/drawer_only.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:the_tatto/screens/base_scaffold.dart';
 import 'package:the_tatto/utils/app_color.dart';
 
 
@@ -24,92 +25,87 @@ class _About extends State<About> {
 
   @override
   Widget build(BuildContext context) {
-    return new SafeArea(
-      child:  Scaffold(
-        resizeToAvoidBottomInset: true,
-        extendBodyBehindAppBar: true,
-        backgroundColor:kAppPrimaryColor,
-        appBar: appbar(context, 'About App', _drawerscaffoldkey,false),
-        key: _drawerscaffoldkey,
-        drawer: new DrawerOnly(),
-        body: new Stack(children: <Widget>
-        [
+    return BaseScaffold(
+      appBarHeading: "About App",
+      isBackArrow: true,
+      isAppBarShow: true,
+      body: new Stack(children: <Widget>
+      [
 
 
 
 
 /*
-          new Container(
+        new Container(
+          alignment: Alignment.center,
+          // transform: Matrix4.translationValues(-50.0, -50.0, 0.0),
+
+
+          child: Center(
+
+            child: Image.asset("images/about.png"),
+
+
+
+          ),
+        ),*/
+
+             new Container(
             alignment: Alignment.center,
-            // transform: Matrix4.translationValues(-50.0, -50.0, 0.0),
+
+            transform: Matrix4.translationValues(0.0, -15.0, 0.0),
 
 
             child: Center(
 
-              child: Image.asset("images/about.png"),
+              child: Text("TATOO.",  style: TextStyle(
+                  color: kPrimaryTextColor,
+                  fontSize: 40,
+                  fontWeight: FontWeight.w900,
+                  fontFamily: 'Montserrat'),),
+
 
 
 
             ),
-          ),*/
-
-               new Container(
-              alignment: Alignment.center,
-
-              transform: Matrix4.translationValues(0.0, -15.0, 0.0),
-
-
-              child: Center(
-
-                child: Text("TATOO.",  style: TextStyle(
-                    color: kPrimaryTextColor,
-                    fontSize: 40,
-                    fontWeight: FontWeight.w900,
-                    fontFamily: 'Montserrat'),),
-
-
-
-
-              ),
-            ),
-
-            new Container(
-              alignment: Alignment.topCenter,
-              transform: Matrix4.translationValues(15.0, 15.0, 0.0),
-
-
-              child: Center(
-
-                child: Text("Version 01.0.00",  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'Montserrat'),),
-
-
-
-
-              ),
-            ),
-
-          new Container(
-              alignment: Alignment.bottomCenter,
-
-
-              child: Body()
           ),
 
+          new Container(
+            alignment: Alignment.topCenter,
+            transform: Matrix4.translationValues(15.0, 15.0, 0.0),
+
+
+            child: Center(
+
+              child: Text("Version 01.0.00",  style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Montserrat'),),
 
 
 
 
-        ]
+            ),
+          ),
 
-        )
+        new Container(
+            alignment: Alignment.bottomCenter,
 
 
-        ,
-      ),
+            child: Body()
+        ),
+
+
+
+
+
+      ]
+
+      )
+
+
+      ,
     );
   }
 }

@@ -1,23 +1,31 @@
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import 'package:the_tatto/screens/detailbarber.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:the_tatto/utils/app_color.dart';
+import 'package:the_tatto/viewmodel/auth_view_model.dart';
 
 
 class TopServiceDataNew extends StatelessWidget {
   final String category;
-  final Color dark_color;
-  final Color light_color;
+
+  final String imageUrl;
+  final String address;
+  final String time;
+  final String name;
+  final int userId;
+
 
   const TopServiceDataNew(
-      {Key key, this.category, this.dark_color, this.light_color})
+      {Key key, this.category, this.imageUrl, this.address, this.time, this.userId, this.name})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     dynamic screenHeight = MediaQuery.of(context).size.height;
     dynamic screenwidth = MediaQuery.of(context).size.width;
+    final _notifier = Provider.of<AuthViewModel>(context);
 
     return new Container(
         color: kAppPrimaryColor,
@@ -39,14 +47,14 @@ class TopServiceDataNew extends StatelessWidget {
                 new Container(
                   height: 80,
                   width: screenwidth * .18,
-
                   // color: Colors.black,
                   alignment: Alignment.topLeft,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10.0),
                     image: DecorationImage(
-                      image: AssetImage("images/smallbarber.png"),
-                      fit: BoxFit.fitWidth,
+                    //  image: AssetImage("images/smallbarber.png"),
+                      image: NetworkImage(imageUrl),
+                      fit: BoxFit.fill,
                       alignment: Alignment.topCenter,
                     ),
                   ),
@@ -87,7 +95,7 @@ class TopServiceDataNew extends StatelessWidget {
                                 Container(
                                   margin: EdgeInsets.only(top: 5.0, left: 5),
                                   child: Text(
-                                    "vishwashanti marg, near lnn, pune ",
+                                    "$address",
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 2,
                                     style: TextStyle(
@@ -129,7 +137,7 @@ class TopServiceDataNew extends StatelessWidget {
                                         margin:
                                             EdgeInsets.only(left: 2, top: 2),
                                         child: Text(
-                                          "08:00 am - 09:00 pm ",
+                                          "$time",
                                           style: TextStyle(
                                               color: const Color(0xFF00d14d),
                                               fontSize: 11,
@@ -153,11 +161,12 @@ class TopServiceDataNew extends StatelessWidget {
                                     minWidth: screenwidth * .22,
                                     height: 30,
                                     onPressed: () {
+                                      _notifier.getAboutDataList(userId);
                                       Navigator.push(
                                           context,
                                           new MaterialPageRoute(
                                               builder: (ctxt) =>
-                                                  new DetailBarber()));
+                                                  new DetailBarber(name: name !=null ? name : "",)));
                                     },
                                     shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(5),

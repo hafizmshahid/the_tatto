@@ -98,11 +98,11 @@ void showcancledialog(BuildContext context) {
           child: Text("Yes",style: TextStyle(color: const Color(0xFFe06287),fontSize: 16,fontWeight: FontWeight.w600,fontFamily: 'Montserrat'),),
           onPressed:  () {
             _notifier.getUserLogout();
-            if(_notifier.isLogout){
+           /* if(_notifier.isLogout){
               print("-------------------ok----------");
             }else{
               print("-------------------not ok-----------------");
-            }
+            }*/
           //  Navigator.pop(context);
 
           },

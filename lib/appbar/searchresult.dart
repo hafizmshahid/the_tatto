@@ -284,10 +284,7 @@ class _SearchResult extends State<SearchResult> {
                                 return new TopServiceDataNew(
                                   category: categorydatalist[index]
                                   ['category'],
-                                  dark_color: categorydatalist[index]
-                                  ['dark_color'],
-                                  light_color: categorydatalist[index]
-                                  ['light_color'],
+
                                 );
                               },
                               itemCount: categorydatalist.length,

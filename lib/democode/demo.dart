@@ -46,8 +46,6 @@ class Expansionpaneltate extends State<Expansionpanel> {
                 itemBuilder: (BuildContext context, int index) {
                   return new TopServiceDataNew(
                     category:"fdsads",
-                    dark_color: kGreenColor,
-                    light_color: kGreenColor,
                   );
                 },
                 itemCount:5,

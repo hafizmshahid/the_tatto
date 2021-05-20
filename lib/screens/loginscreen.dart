@@ -50,6 +50,7 @@ class _LoginScreen extends State<LoginScreen> {
 
   ProgressDialog pr;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  GlobalKey<FormState> signInForm = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +82,7 @@ class _LoginScreen extends State<LoginScreen> {
       child: Scaffold(
         key: _scaffoldKey,
         body: Form(
-          key: _notifier.signInForm,
+          key: signInForm,
           child: Stack(children: <Widget>[
              Container(
               child: new BackdropFilter(
@@ -245,7 +246,10 @@ class _LoginScreen extends State<LoginScreen> {
                       //  color: const Color(0xFF18FF10),
                       color: kGreenColor,
                       onPressed: () async {
-                        /*Navigator.push(
+                        if(signInForm.currentState.validate()){
+                          signInForm.currentState.save();
+
+                 /*       Navigator.push(
                             context,
                             MaterialPageRoute(
                             builder: (context) => HomeScreen(2)));*/
@@ -263,9 +267,9 @@ class _LoginScreen extends State<LoginScreen> {
                           // Fluttertoast.showToast(msg: "${_notifier.authMsg}", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.BOTTOM,);
                         } else {
                           Navigator.pop(context);
-                          print("----------------not ok------------------");
+                          print("----------------not ok  ${_notifier.authMsg}------------------");
                           Fluttertoast.showToast(
-                            msg: "${_notifier.authMsg}",
+                            msg: _notifier.authMsg,
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
                           );
@@ -299,7 +303,16 @@ class _LoginScreen extends State<LoginScreen> {
                             // var savedValue = preferences.getString('value_key');
                           );*/ /*
                         }*/
-                      },
+                      } else {
+
+                          Fluttertoast.showToast(
+                            msg: "Please fill all field",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                          );
+                        }
+
+                        },
                       child: Text(
                         "Login",
                         textAlign: TextAlign.center,

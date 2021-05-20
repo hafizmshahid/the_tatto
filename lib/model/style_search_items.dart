@@ -1,4 +1,5 @@
 import 'package:the_tatto/screens/style_search_page.dart';
+import 'package:the_tatto/utils/ZImageDisplay.dart';
 import 'package:the_tatto/utils/app_sizes.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:the_tatto/screens/detailbarber.dart';
@@ -6,13 +7,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class StyleSearchItems extends StatelessWidget {
-  final String category;
-  final Color dark_color;
-  final Color light_color;
+  final String headingName;
+  final String imageUrl;
 
-  const StyleSearchItems(
-      {Key key, this.category, this.dark_color, this.light_color})
-      : super(key: key);
+  const StyleSearchItems({Key key, this.headingName, this.imageUrl}) : super(key: key);
+  // final Color dark_color;
+  // final Color light_color;
+  //
+  // const StyleSearchItems(
+  //     {Key key, this.category, this.dark_color, this.light_color})
+  //     : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +34,8 @@ class StyleSearchItems extends StatelessWidget {
               context,
               MaterialPageRoute(
                   builder: (context) => StyleSearchScreen(
-                        imageUrl: "images/smallbarber.png",
-                        heading: category,
+                        imageUrl: imageUrl,
+                        heading: headingName,
                       )
                   // Expansionpanel()
                   ),
@@ -46,16 +50,24 @@ class StyleSearchItems extends StatelessWidget {
                 alignment: Alignment.topLeft,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage("images/smallbarber.png"),
+                    image: NetworkImage(imageUrl),
                     fit: BoxFit.fitWidth,
                     alignment: Alignment.topCenter,
                   ),
                 ),
               ),
+             /* ZImageDisplay(
+                height: 100,
+                width: screenwidth * .30,
+                imageUrl: imageUrl,
+                borderRadius: BorderRadius.circular(10),
+              ),*/
+
+
               Container(
                 margin: EdgeInsets.only( left: 10),
                 child: Text(
-                  "$category",
+                  "$headingName",
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
                   style: TextStyle(

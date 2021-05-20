@@ -36,6 +36,7 @@ class _ForgotPassword extends State<ForgotPassword> {
 
   FocusNode _emailFocusNode = FocusNode();
   String _username,_email,_password= "";
+  GlobalKey<FormState> forgetForm = GlobalKey<FormState>();
 
 
 
@@ -68,7 +69,7 @@ class _ForgotPassword extends State<ForgotPassword> {
 
 
                 body:Form(
-                    key: _notifier.forgetForm,
+                    key: forgetForm,
                     child: Container(
                         child: Column(children: <Widget>[
                           Expanded(
@@ -175,6 +176,7 @@ class _ForgotPassword extends State<ForgotPassword> {
                                       height: 40,
                                       color: kGreenColor ,
                                       onPressed: () async {
+                                        if(forgetForm.currentState.validate()){
 
                                         showProcessBar(context);
                                         await _notifier.validateAndSubmitForget();
@@ -209,7 +211,7 @@ class _ForgotPassword extends State<ForgotPassword> {
                                     }*/
 
 
-                                      },
+                                      }},
                                       child: Text(
                                         "Send me OTP",
                                         textAlign: TextAlign.center,

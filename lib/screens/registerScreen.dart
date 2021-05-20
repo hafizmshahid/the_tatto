@@ -94,6 +94,7 @@ class _RegisterScreen extends State<RegisterScreen> {
     );
 
     final _notifier = Provider.of<AuthViewModel>(context);
+    GlobalKey<FormState> signUpForm = GlobalKey<FormState>();
     AppSizes().init(context);
     return BaseScaffold(
       internetFunction: true,
@@ -144,7 +145,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                     decoration:
                     new BoxDecoration(color: Colors.white.withOpacity(0.0)),
                     child: Form(
-                      key: _notifier.signUpForm,
+                      key: signUpForm,
                       child: SingleChildScrollView(
                         child: Column(children: <Widget>[
                           Container(
@@ -240,10 +241,10 @@ class _RegisterScreen extends State<RegisterScreen> {
                                   ? null
                                   : "Invalid email address",
                               onSaved: (value) => _notifier.signUpEmail = value,
-                              onFieldSubmitted: (_) {
+                             /* onFieldSubmitted: (_) {
                                 fieldFocusChange(
                                     context, _emailFocusNode, _phoneFocusNode);
-                              },
+                              },*/
                               style: TextStyle(
                                   fontSize: 16.0,
                                   color: Colors.white,
@@ -291,10 +292,10 @@ class _RegisterScreen extends State<RegisterScreen> {
                                 top: 5.0, left: 20.0, right: 20.0),
                             child: TextFormField(
                               autofocus: true,
-                              keyboardType: TextInputType.emailAddress,
+                              keyboardType: TextInputType.phone,
                               textInputAction: TextInputAction.next,
                               onSaved: (value) => _notifier.signUpPhone = value,
-                              focusNode: _emailFocusNode,
+                            //  focusNode: _emailFocusNode,
                               validator: (phone) {
                                 Pattern pattern = r'^[0-9]*$';
                                 RegExp regex = new RegExp(pattern);
@@ -303,10 +304,10 @@ class _RegisterScreen extends State<RegisterScreen> {
                                 else
                                   return null;
                               },
-                              onFieldSubmitted: (_) {
+                             /* onFieldSubmitted: (_) {
                                 fieldFocusChange(
                                     context, _emailFocusNode, _phoneFocusNode);
-                              },
+                              },*/
                               style: TextStyle(
                                   fontSize: 16.0,
                                   color: Colors.white,
@@ -406,6 +407,8 @@ class _RegisterScreen extends State<RegisterScreen> {
                                 height: 40,
                                 color: kGreenColor,
                                 onPressed: () async {
+                                  if(signUpForm.currentState.validate()){
+                                    signUpForm.currentState.save();
                                   showProcessBar(context);
                                   await _notifier.validateAndSubmitSignUp();
                                   if (_notifier.isSignUp) {
@@ -451,7 +454,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                                     }*/
 
                                   // toastMessage("Email: $_email\nPassword: $_password");
-                                },
+                                }},
                                 child: Text(
                                   "Create New Account",
                                   textAlign: TextAlign.center,

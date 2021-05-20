@@ -59,7 +59,8 @@ class _BaseScaffoldState extends State<BaseScaffold> {
         child: Scaffold(
           key: _drawerscaffoldkey,
             appBar:widget.isAppBarShow ? appbar(context, '${widget.appBarHeading}', _drawerscaffoldkey, widget.isBackArrow): null,
-            drawer:!widget.isBackArrow ?DrawerOnly():null,
+            drawer:DrawerOnly(),
+           // drawer:widget.isBackArrow ? DrawerOnly(): null,
            // bottomNavigationBar: new BottomBar(widget.bottomBarIndex),
            /* bottomNavigationBar:  new TabBar(
               tabs: [
@@ -77,6 +78,7 @@ class _BaseScaffoldState extends State<BaseScaffold> {
               indicatorWeight: 3.0,
 
             ),*/
+
             body: ( _isNetworkConnected || !widget.internetFunction) ?
             Container(
               width: double.infinity,

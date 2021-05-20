@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:provider/provider.dart';
+import 'package:the_tatto/ResponseModel/StyleList.dart';
 import 'package:the_tatto/ResponseModel/bannerResponse.dart';
 import 'package:the_tatto/ResponseModel/categorydataResponse.dart';
 import 'package:the_tatto/ResponseModel/salonResponse.dart';
@@ -15,6 +16,7 @@ import 'package:the_tatto/screens/base_scaffold.dart';
 import 'package:the_tatto/screens/detailbarber.dart';
 import 'package:the_tatto/screens/registerScreen.dart';
 import 'package:the_tatto/screens/style_search_page.dart';
+import 'package:the_tatto/utils/app_api_ref.dart';
 import 'package:the_tatto/utils/app_color.dart';
 import 'package:the_tatto/utils/app_constant.dart';
 import 'package:connectivity/connectivity.dart';
@@ -22,15 +24,13 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:the_tatto/screens/savelocation.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:the_tatto/appbar/app_bar_only.dart';
-import 'package:the_tatto/drawer/drawer_only.dart';
-import 'package:the_tatto/drawerscreen/top_services.dart';
-import 'package:the_tatto/separator/separator.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:the_tatto/utils/app_sizes.dart';
 import 'package:the_tatto/viewmodel/auth_view_model.dart';
+import 'package:http/http.dart' as http;
 
 class FgHome extends StatefulWidget {
   FgHome({Key key, this.title}) : super(key: key);
@@ -49,7 +49,18 @@ class _FgHome extends State<FgHome> {
 
   int index = 0;
   ProgressDialog pr;
-  
+
+  /*  Future<void> getStyleList() async {
+    final response = await http.get(kStylesApi);
+    if (response.statusCode == 200) {
+      final String responseString = response.body;
+      print("-----------favorite response : ${response.body}--------------------");
+      setState(() {
+       // _styleList = favorite.favoriteModelFromJson(responseString);
+        _styleList = styleListFromJson(responseString) ;
+      });
+    }
+  }*/
 
   @override
   void initState() {
@@ -58,6 +69,7 @@ class _FgHome extends State<FgHome> {
     isExpandedShopList = false;
     isExpandedArtistList = false;
     isExpandedStyleList = false;
+    // getStyleList();
     pr.style(
       message: 'Loading Data...',
       borderRadius: 5.0,
@@ -233,7 +245,6 @@ class _FgHome extends State<FgHome> {
     },
   ];
 
-
   List<T> map<T>(List list, Function handler) {
     List<T> result = [];
     for (var i = 0; i < list.length; i++) {
@@ -244,12 +255,21 @@ class _FgHome extends State<FgHome> {
 
   final GlobalKey<ScaffoldState> _drawerscaffoldkey =
       new GlobalKey<ScaffoldState>();
+  GlobalKey<FormState> artistForm = GlobalKey<FormState>();
+  GlobalKey<FormState> shopSearchForm = GlobalKey<FormState>();
 
   bool isExpandedStyleList = false;
   bool isExpandedArtistList = false;
   bool isExpandedShopList = false;
   int selected = 0;
+
+  // String artistSearchValue;
+//  String shopSearchValue;
   ScrollController _scrollController = ScrollController();
+
+  // List<StyleList> _styleList;
+  String strImageUrl =
+      "https://www.menshairstylesnow.com/wp-content/uploads/2019/09/Cool-Arm-Tattoo-Ideas.jpg";
 
   @override
   Widget build(BuildContext context) {
@@ -257,11 +277,13 @@ class _FgHome extends State<FgHome> {
     AppSizes().init(context);
     // TODO: implement build
     return BaseScaffold(
-      appBarHeading: "Home",
+        appBarHeading: "Home",
         isBackArrow: false,
         body: Stack(
           children: [
-            Container(color: Colors.black,height: double.infinity,width: double.infinity,),
+            Container(
+
+            ),
             SingleChildScrollView(
               controller: _scrollController,
               child: Column(
@@ -271,6 +293,7 @@ class _FgHome extends State<FgHome> {
                 children: [
                   Container(
                     margin: EdgeInsets.only(right: 20, left: 20),
+                    padding: EdgeInsets.symmetric(horizontal: 20),
                     height: 170,
                     width: double.infinity,
                     alignment: Alignment.center,
@@ -281,115 +304,94 @@ class _FgHome extends State<FgHome> {
                       ),
                       borderRadius: BorderRadius.circular(10.0),
                     ),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        children: [
-                          Flexible(
-                            child: TextFormField(
+                    child: TextFormField(
+                      style: TextStyle(
+                          fontSize: 14.0,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Montserrat'),
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: EdgeInsets.only(top: 0,bottom: 0,left: 10),
+                        suffixIcon: InkWell(
+                          onTap: () {
+                            if (!isExpandedStyleList) {
+                              setState(() {
+                                isExpandedStyleList = true;
+                                _notifier.getStyleList();
+                              });
+                            } else if (isExpandedStyleList) {
+                              setState(() {
+                                isExpandedStyleList = false;
+                              });
+                            }
 
-                              style: TextStyle(
-                                  fontSize: 14.0,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: 'Montserrat'),
-                              showCursor: true,
-                              readOnly: true,
-
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: Colors.white,
-                                hintText: 'Traditional Tattoo Style',
-                                contentPadding:
-                                EdgeInsets.symmetric(horizontal: 20.0),
-                                hintStyle: TextStyle(
-                                    fontSize: 17.0,
-                                    color: Colors.black.withOpacity(0.5)),
-                                border: InputBorder.none,
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white),
-                                  borderRadius: BorderRadius.only(
-                                    bottomLeft: const Radius.circular(20.0),
-                                    topLeft: const Radius.circular(20.0),
-                                  ),
-                                ),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white),
-                                  borderRadius: BorderRadius.only(
-                                    bottomLeft: const Radius.circular(20.0),
-                                    topLeft: const Radius.circular(20.0),
-                                  ),
-                                ),
-                              ),
-                            ),
+                            // Navigator.push(context, new MaterialPageRoute(builder: (ctxt) => new SearchResultShowScreen(0,"Artist Name")));
+                          },
+                          child: new Icon(
+                            Icons.search,
+                            color: Colors.black,
                           ),
-                          InkWell(
-                            onTap: () {
-                             _notifier.getStyleList();
-                              if (!isExpandedStyleList) {
-                                setState(() {
-                                  isExpandedStyleList = true;
-                                });
-                              } else if (isExpandedStyleList) {
-                                setState(() {
-                                  isExpandedStyleList = false;
-                                });
-                              }
+                        ),
+                        hintText: 'Traditional Tattoo Style',
+                        hintStyle: TextStyle(
+                            fontSize: 17.0,
+                            color: Colors.black.withOpacity(0.5)),
+                        border: InputBorder.none,
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(20.0),
 
-                              // Navigator.push(context, new MaterialPageRoute(builder: (ctxt) => new SearchResultShowScreen(0,"Artist Name")));
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 12, horizontal: 8),
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.only(
-                                    topRight: const Radius.circular(20.0),
-                                    bottomRight: const Radius.circular(20.0),
-                                  )),
-                              child: Icon(
-                                Icons.search_rounded,
-                                color: Colors.black,
-                              ),
-                            ),
-                          )
-                        ],
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
                       ),
                     ),
                   ),
                   isExpandedStyleList
                       ? Container(
-
-                    height: 500,
-                    child:_notifier.isStyleList ? Container(
-                      height: 50,
-                      child: SpinKitWave(
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ): ListView.builder(
-                      shrinkWrap: true,
-                      itemBuilder: (BuildContext context, int index) {
-                        return StyleSearchItems(
-                          category: "${_notifier.titleList[index]}",
-                          dark_color: kGreenColor,
-                          light_color: kGreenColor,
-                        );
-                      },
-                      itemCount: 5,
-                    ),
-                  )
+                          height: 500,
+                          child: !_notifier.isStyleList
+                              ? Container(
+                                  height: 50,
+                                  child: SpinKitWave(
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                )
+                              : ListView.builder(
+                                  shrinkWrap: true,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return StyleSearchItems(
+                                      headingName:
+                                          "${_notifier.styleList[index].styleName}",
+                                      //   imageUrl:"${_notifier.styleList[index].profileImage}" ,
+                                      imageUrl:
+                                          "https://tattooarts.herokuapp.com${_notifier.styleList[index].profileImage}",
+                                      /* dark_color: kGreenColor,
+                          light_color: kGreenColor,*/
+                                    );
+                                  },
+                                  itemCount: _notifier.styleList.length,
+                                  //   itemCount: _styleList.styleName.length,
+                                ),
+                        )
                       : Container(),
                   SizedBox(
                     height: 20,
                   ),
                   Container(
                     margin: EdgeInsets.only(right: 20, left: 20),
+                    padding: EdgeInsets.symmetric(horizontal: 20.0),
                     height: 170,
                     width: double.infinity,
                     alignment: Alignment.center,
@@ -400,110 +402,143 @@ class _FgHome extends State<FgHome> {
                       ),
                       borderRadius: BorderRadius.circular(10.0),
                     ),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        children: [
-                          Flexible(
-                            child: TextFormField(
+                    child: Form(
+                      key: artistForm,
+                      child: TextFormField(
+                        style: TextStyle(
+                            fontSize: 14.0,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Montserrat'),
+                        onSaved: (String value){ value == null ? _notifier.artistSearchValue = "": _notifier.artistSearchValue = value.toString().trim();
 
-                              style: TextStyle(
-                                  fontSize: 14.0,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: 'Montserrat'),
-                              showCursor: true,
-                              readOnly: true,
+                        },
+                       /* validator: (String value) {
+                          if (value.isEmpty) {
 
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: Colors.white,
-                                hintText: 'Search By Artist Name',
-                                contentPadding:
-                                EdgeInsets.symmetric(horizontal: 20.0),
-                                hintStyle: TextStyle(
-                                    fontSize: 17.0,
-                                    color: Colors.black.withOpacity(0.5)),
-                                border: InputBorder.none,
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white),
-                                  borderRadius: BorderRadius.only(
-                                    bottomLeft: const Radius.circular(20.0),
-                                    topLeft: const Radius.circular(20.0),
-                                  ),
-                                ),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white),
-                                  borderRadius: BorderRadius.only(
-                                    bottomLeft: const Radius.circular(20.0),
-                                    topLeft: const Radius.circular(20.0),
-                                  ),
-                                ),
-                              ),
+                            return "Empty !";
+                          } else{
+                            setState(() {
+                              _notifier.artistSearchValue = value.toString().trim();
+                            });
+                            return null;
+                          }
+                        },*/
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding: EdgeInsets.only(top: 0,bottom: 0,left: 10),
+                          suffixIcon: InkWell(
+                            onTap: () {
+                              if(artistForm.currentState.validate()){
+                                artistForm.currentState.save();
+
+                                if (!isExpandedArtistList)
+                                  setState(() {
+                                    isExpandedArtistList = true;
+                                    FocusScope.of(context).unfocus();
+                                    /*_scrollController..animateTo(180.0,
+    duration: Duration(milliseconds: 500), curve: Curves.ease);*/
+                                    _notifier.getArtistList();
+                                  });
+                                else if (isExpandedArtistList) {
+                                  setState(() {
+                                    isExpandedArtistList = false;
+                                  });
+                                }
+                                //  Navigator.push(context, new MaterialPageRoute(builder: (ctxt) => new SearchResultShowScreen(0,"Artist Name")));
+                              }
+                            },
+                            child: new Icon(
+                              Icons.search,
+                              color: Colors.black,
                             ),
                           ),
-                          InkWell(
-                            onTap: () {
-                              if (!isExpandedArtistList)
-                                setState(() {
-                                  isExpandedArtistList = true;
-                                  _scrollController..animateTo(180.0,
-                                      duration: Duration(milliseconds: 500), curve: Curves.ease);
-                                });
-                              else if (isExpandedArtistList) {
-                                setState(() {
-                                  isExpandedArtistList = false;
-                                });
-                              }
-                              //  Navigator.push(context, new MaterialPageRoute(builder: (ctxt) => new SearchResultShowScreen(0,"Artist Name")));
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 12, horizontal: 8),
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.only(
-                                    topRight: const Radius.circular(20.0),
-                                    bottomRight: const Radius.circular(20.0),
-                                  )),
-                              child: Icon(
-                                Icons.search_rounded,
-                                color: Colors.black,
-                              ),
-                            ),
-                          )
-                        ],
+                          hintText: 'Search By Artist Name',
+                          hintStyle: TextStyle(
+                              fontSize: 17.0,
+                              color: Colors.black.withOpacity(0.5)),
+                          border: InputBorder.none,
+                          errorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                            borderRadius: BorderRadius.circular(20.0),
+                          ), focusedErrorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
                       ),
                     ),
                   ),
                   isExpandedArtistList
                       ? Container(
-                    height: 350,
-                    margin: EdgeInsets.only(bottom: 100, ),//left: 20, right: 20),
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemBuilder: (BuildContext context, int index) {
-                        return TopServiceDataNew(
-                          category: "Name",
-                          dark_color: categorydatalist[index]['dark_color'],
-                          light_color: categorydatalist[index]
-                          ['light_color'],
-                        );
-                      },
-                      itemCount: 3,
-                    ),
-                  )
+                          height: 350,
+                          margin: EdgeInsets.only(
+                            bottom: 100,
+                          ),
+                          //left: 20, right: 20),
+                          child: !_notifier.isArtistList
+                              ? Container(
+                                  height: 50,
+                                  child: SpinKitWave(
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                )
+                              : Container(
+                                  child: _notifier.artistSearchList.length == 0
+                                      ? Container(
+                                          child: Center(
+                                            child: Text(
+                                              "Not Found",
+                                              style: TextStyle(
+                                                  color: kPrimaryTextColor,
+                                                  fontSize: 15),
+                                            ),
+                                          ),
+                                        )
+                                      : ListView.builder(
+                                          shrinkWrap: true,
+                                          itemBuilder: (BuildContext context,
+                                              int index) {
+                                            return TopServiceDataNew(
+                                              category: _notifier
+                                                  .artistSearchList[index].name,
+                                              address: _notifier
+                                                  .artistSearchList[index]
+                                                  .location,
+                                              imageUrl: _notifier
+                                                  .artistSearchList[index]
+                                                  .profileImage,
+                                              userId:_notifier
+                                                  .artistSearchList[index]
+                                                  .id ,
+                                              name:_notifier
+                                              .artistSearchList[index]
+                                              .name ,
+                                              time:
+                                                  "${_notifier.artistSearchList[index].defaultOpening} - ${_notifier.artistSearchList[index].defaultClosing}",
+                                            );
+                                          },
+                                          itemCount:
+                                              _notifier.artistSearchList.length,
+                                        ),
+                                ),
+                        )
                       : Container(),
                   SizedBox(
                     height: 20,
                   ),
                   Container(
-                    margin: EdgeInsets.only( right: 20, left: 20),
+                    margin: EdgeInsets.only(right: 20, left: 20),
                     height: 170.0,
                     width: double.infinity,
                     alignment: Alignment.center,
@@ -521,95 +556,138 @@ class _FgHome extends State<FgHome> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Row(
-                        children: [
-                          Flexible(
-                            child: TextFormField(
+                      child: Form(
+                        key: shopSearchForm,
+                        child: TextFormField(
+                          style: TextStyle(
+                              fontSize: 14.0,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: 'Montserrat'),
+                       /*   validator: (String value) {
+                            if (value.isEmpty) {
 
-                              style: TextStyle(
-                                  fontSize: 14.0,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: 'Montserrat'),
-                              showCursor: true,
-                              readOnly: true,
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: Colors.white,
-                                hintText: 'Search by Shop Name',
-                                contentPadding:
-                                EdgeInsets.symmetric(horizontal: 20.0),
-                                hintStyle: TextStyle(
-                                    fontSize: 17.0,
-                                    color: Colors.black.withOpacity(0.5)),
-                                border: InputBorder.none,
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white),
-                                  borderRadius: BorderRadius.only(
-                                    bottomLeft: const Radius.circular(20.0),
-                                    topLeft: const Radius.circular(20.0),
-                                  ),
-                                ),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white),
-                                  borderRadius: BorderRadius.only(
-                                    bottomLeft: const Radius.circular(20.0),
-                                    topLeft: const Radius.circular(20.0),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              if (!isExpandedShopList)
-                                setState(() {
-                                  isExpandedShopList = true;
-                                });
-                              else if (isExpandedShopList) {
-                                setState(() {
-                                  isExpandedShopList = false;
-                                });
-                              }
-                              //  Navigator.push(context, new MaterialPageRoute(builder: (ctxt) => new SearchResultShowScreen(0,"Shop Name")));
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 12, horizontal: 8),
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.only(
-                                    topRight: const Radius.circular(20.0),
-                                    bottomRight: const Radius.circular(20.0),
-                                  )),
-                              child: Icon(
-                                Icons.search_rounded,
+                              return "Empty !";
+                            } else{
+                              setState(() {
+                                _notifier.artistSearchValue = value.toString().trim();
+                              });
+                              return null;
+                            }
+                          },*/
+                          onSaved: (String value){ value == null ? _notifier.shopSearchValue  = "": _notifier.shopSearchValue  = value.toString().trim();
+                          },
+                          decoration: InputDecoration(
+                            hintText: 'Search by Shop Name',
+                            filled: true,
+                            fillColor: Colors.white,
+                            suffixIcon: InkWell(
+                              onTap: () {
+                                if (shopSearchForm.currentState.validate()) {
+                                  shopSearchForm.currentState.save();
+                                  if (!isExpandedShopList)
+                                    setState(() {
+                                      FocusScope.of(context).unfocus();
+                                      _notifier.getShopNameList();
+                                      isExpandedShopList = true;
+                                    });
+                                  else if (isExpandedShopList) {
+                                    setState(() {
+                                      isExpandedShopList = false;
+                                    });
+                                  }
+                                  //  Navigator.push(context, new MaterialPageRoute(builder: (ctxt) => new SearchResultShowScreen(0,"Shop Name")));
+                                }
+                              },
+
+                              child: new Icon(
+                                Icons.search,
                                 color: Colors.black,
                               ),
                             ),
-                          )
-                        ],
+                            hintStyle: TextStyle(
+                                fontSize: 17.0,
+                                color: Colors.black.withOpacity(0.5)),
+                            contentPadding: EdgeInsets.only(top: 0,bottom: 0,left: 10),
+                            border: InputBorder.none,
+                            errorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(20.0),
+                            ), focusedErrorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                  SizedBox(height: 10,),
-                  isExpandedShopList ?
-                  Container(
-                    height: 350,
-                    margin: EdgeInsets.only(bottom: 100, ),//left: 20, right: 20),
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemBuilder: (BuildContext context, int index) {
-                        return TopServiceDataNew(
-                          category: "Name",
-                          dark_color: categorydatalist[index]['dark_color'],
-                          light_color: categorydatalist[index]
-                          ['light_color'],
-                        );
-                      },
-                      itemCount: 3,
-                    ),
-                  )
+                  SizedBox(
+                    height: 10,
+                  ),
+                  isExpandedShopList
+                      ? Container(
+                          height: 350,
+                          margin: EdgeInsets.only(
+                            bottom: 100,
+                          ),
+                          //left: 20, right: 20),
+                          child: !_notifier.isShopSearchList
+                              ? Container(
+                                  height: 50,
+                                  child: SpinKitWave(
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                )
+                              : Container(
+                                  child: _notifier.shopSearchList.length == 0
+                                      ? Container(
+                                          child: Center(
+                                            child: Text(
+                                              "Not Found",
+                                              style: TextStyle(
+                                                  color: kPrimaryTextColor,
+                                                  fontSize: 15),
+                                            ),
+                                          ),
+                                        )
+                                      : ListView.builder(
+                                          shrinkWrap: true,
+                                          itemBuilder: (BuildContext context,
+                                              int index) {
+                                            return TopServiceDataNew(
+                                              category: _notifier
+                                                  .shopSearchList[index].name,
+                                              address: _notifier
+                                                  .shopSearchList[index]
+                                                  .location,
+                                              imageUrl: _notifier
+                                                  .shopSearchList[index]
+                                                  .profileImage,
+                                              userId:_notifier
+                                                  .shopSearchList[index]
+                                                  .id ,
+                                              name: _notifier
+                                                  .shopSearchList[index]
+                                                  .name,
+                                              time:
+                                                  "${_notifier.shopSearchList[index].defaultOpening} - ${_notifier.shopSearchList[index].defaultClosing}",
+                                            );
+                                          },
+                                          itemCount:
+                                              _notifier.shopSearchList.length,
+                                        ),
+                                ),
+                        )
                       : Container(),
                 ],
               ),

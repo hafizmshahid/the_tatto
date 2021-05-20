@@ -45,6 +45,7 @@ dependencies:
   flutter_svg: ^0.19.1
   fluttertoast:
   email_validator: ^1.0.0
+  cached_network_image:
   shared_preferences: ^0.5.4+8
   retrofit:
   json_annotation:
