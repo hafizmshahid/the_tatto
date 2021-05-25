@@ -5,6 +5,8 @@ final Color kGreenColor = HexColor("#00d14d");
 final Color kGryBorderColor = HexColor("#707070");
 final Color kAppPrimaryColor = HexColor("#000000");
 final Color kPrimaryTextColor = HexColor("#ffffff");
+final Color kPrimaryPinkColor = HexColor("#e06287");
+//Color(0xFFe06287)
 
 
 

@@ -57,6 +57,7 @@ class _BaseScaffoldState extends State<BaseScaffold> {
     return SafeArea(
       child: Container(
         child: Scaffold(
+            resizeToAvoidBottomInset: false,
           key: _drawerscaffoldkey,
             appBar:widget.isAppBarShow ? appbar(context, '${widget.appBarHeading}', _drawerscaffoldkey, widget.isBackArrow): null,
             drawer:DrawerOnly(),

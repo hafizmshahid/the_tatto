@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import 'package:the_tatto/appbar/app_bar_only.dart';
 import 'package:the_tatto/drawer/drawer_only.dart';
 import 'package:the_tatto/drawerscreen/top_offers.dart';
@@ -7,6 +10,7 @@ import 'package:the_tatto/model/appointmentdata.dart';
 import 'package:the_tatto/model/doneappointmentData.dart';
 import 'package:flutter/material.dart';
 import 'package:the_tatto/utils/app_color.dart';
+import 'package:the_tatto/viewmodel/auth_view_model.dart';
 
 
 
@@ -25,6 +29,7 @@ class Profile extends StatefulWidget {
 class _Profile extends State<Profile> {
   final GlobalKey<ScaffoldState> _drawerscaffoldkey =
       new GlobalKey<ScaffoldState>();
+
   List appoinmentdatalist = [
     {
       "discount": "10%",
@@ -34,6 +39,7 @@ class _Profile extends State<Profile> {
     // {"discount": "50%", "dark_color": const Color(0xFFb5b8ff), "light_color": const Color(0xFFc8caff)},
     // {"discount": "30%", "dark_color": const Color(0xFFffb5b5), "light_color": const Color(0xFFffc8c8)},
   ];
+
 
   List appoinmentdatalist1 = [
     {
@@ -47,6 +53,9 @@ class _Profile extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
+    final _notifier = Provider.of<AuthViewModel>(context);
+    String name=json.decode(_notifier.profileResponseSharePreference)['username'];
+
     // TODO: implement build
     return new SafeArea(
       child: Scaffold(
@@ -76,7 +85,7 @@ class _Profile extends State<Profile> {
                     children: [
                       Container(
                         child: Image.asset(
-                          "images/roundprofile.png",
+                          "${json.decode(_notifier.profileResponseSharePreference)['image']}",
                           width: 90,
                           height: 90,
                         ),
@@ -84,7 +93,7 @@ class _Profile extends State<Profile> {
                       Container(
                         child: Center(
                           child: Text(
-                            'Darshi Patel',
+                            "$name",
                             style: TextStyle(
                                 color:kPrimaryTextColor,
                                 fontWeight: FontWeight.w600,

@@ -36,7 +36,7 @@ class _CustomView extends State<CustomView> {
                 child: GestureDetector(
                   onTap: () {
                     Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => HomeScreen(0)));
+                        MaterialPageRoute(builder: (context) => HomeScreen(1)));
                   },
                   child: Container(
                       width: 20,
@@ -47,26 +47,26 @@ class _CustomView extends State<CustomView> {
                       )),
                 ),
               ),
+              // Expanded(
+              //   child: GestureDetector(
+              //     onTap: () {
+              //       Navigator.of(context).push(
+              //           MaterialPageRoute(builder: (context) => HomeScreen(1)));
+              //     },
+              //     child: Container(
+              //         width: 20,
+              //         height: 20,
+              //         child: Icon(
+              //           Icons.pin_drop_rounded,
+              //           color: kPrimaryTextColor,
+              //         )),
+              //   ),
+              // ),
               Expanded(
                 child: GestureDetector(
                   onTap: () {
                     Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => HomeScreen(1)));
-                  },
-                  child: Container(
-                      width: 20,
-                      height: 20,
-                      child: Icon(
-                        Icons.pin_drop_rounded,
-                        color: kPrimaryTextColor,
-                      )),
-                ),
-              ),
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => HomeScreen(2)));
+                        MaterialPageRoute(builder: (context) => HomeScreen(0)));
                   },
                   child: Container(
                       width: 20,
@@ -81,7 +81,7 @@ class _CustomView extends State<CustomView> {
                 child: GestureDetector(
                   onTap: () {
                     Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => HomeScreen(3)));
+                        MaterialPageRoute(builder: (context) => HomeScreen(2)));
                   },
                   child: Container(
                       width: 20,
@@ -96,7 +96,7 @@ class _CustomView extends State<CustomView> {
                 child: GestureDetector(
                   onTap: () {
                     Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => HomeScreen(4)));
+                        MaterialPageRoute(builder: (context) => HomeScreen(3)));
                   },
                   child: Container(
                       width: 20,

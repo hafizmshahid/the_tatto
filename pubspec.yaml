@@ -60,6 +60,12 @@ dependencies:
   connectivity: ^2.0.0
   gson: ^0.1.4
   font_awesome_flutter: ^9.0.0
+  #location: ^3.0.0
+  geolocator:
+  permission_handler:
+  image_picker:
+  flutter_icons:
+  #stripe_payment:
 
 
 

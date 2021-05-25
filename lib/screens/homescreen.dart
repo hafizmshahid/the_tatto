@@ -55,6 +55,7 @@ class _HomeScreen extends State<HomeScreen> {
 
         // backgroundColor: Colors.white,
         // appBar: appbar(context, 'Home',_drawerscaffoldkey),
+        resizeToAvoidBottomInset: false,
         body: Scaffold(
       resizeToAvoidBottomInset: true,
 

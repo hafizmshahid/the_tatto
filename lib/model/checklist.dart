@@ -1,69 +1,43 @@
+import 'package:provider/provider.dart';
 import 'package:the_tatto/common/customcheckbox.dart';
 import 'package:the_tatto/separator/separator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:the_tatto/viewmodel/auth_view_model.dart';
 
 class Checklist extends StatefulWidget {
+  final String styleName;
+  final int stylePrice;
 
-
-  const Checklist({
-
-    Key key,
-
-    @required  dark_color, light_color, category,
-  })  :
-
-
-        super(key: key);
+  const Checklist({Key key, this.styleName, this.stylePrice}) : super(key: key);
 
   @override
   _Checklist createState() => _Checklist();
 }
 
 class _Checklist extends State<Checklist> {
-
   bool valuefirst = false;
   bool valuesecond = false;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-
-
-
-
       child: Container(
         height: 60,
         width: MediaQuery.of(context).size.width,
-
-
         child: Row(
           // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-
-
           children: <Widget>[
-
             new Container(
-              margin: EdgeInsets.only(left: 10,top:5),
+              margin: EdgeInsets.only(left: 10, top: 5),
               width: 20,
               height: 20,
               color: Colors.white,
 
               child: CustomCheckBox(),
-
-              // child: CustomCheckBox(),
-              // checkColor: Colors.white,
-              // activeColor: Color(0xFFe06287),
-              // value: valuesecond,
-              // onChanged: (value) =>
-              //     setState(() {
-              //       valuesecond = !valuesecond;
-              //     }),
             ),
-
             new Container(
-
-              margin: EdgeInsets.only(left: 10,top:5),
+              margin: EdgeInsets.only(left: 10, top: 5),
               height: 35,
               width: 35,
               //  margin: EdgeInsets.only(left: 10),
@@ -78,38 +52,28 @@ class _Checklist extends State<Checklist> {
                 ),
               ),
             ),
-
-
             new Container(
-                margin: EdgeInsets.only(left: 10,top: 10),
+                margin: EdgeInsets.only(left: 10, top: 10),
                 height: 50,
                 // margin: EdgeInsets.only(left: 10,top: 10),
                 // width: double.infinity,
 
-                child:Column(
-
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
-
                   children: <Widget>[
-
-
-
                     // Expanded(
 
                     // child:
                     Container(
-
                       width: MediaQuery.of(context).size.width * .65,
                       height: 30,
                       margin: EdgeInsets.only(left: 1, top: 2, right: 10),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
                         children: [
                           Container(
-
                             child: Text(
-                              'Traditional Tattoo',
+                              '${widget.styleName}',
                               style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600,
@@ -119,7 +83,7 @@ class _Checklist extends State<Checklist> {
                           ),
                           Container(
                             child: Text(
-                              '250 ₹',
+                              '${widget.stylePrice}',
                               style: TextStyle(
                                   color: const Color(0xFF999999),
                                   fontWeight: FontWeight.w600,
@@ -129,92 +93,19 @@ class _Checklist extends State<Checklist> {
                           ),
                         ],
                       ),
-
                     ),
-
-
 
                     Container(
-                        width: MediaQuery.of(context).size.width *.65,
-                        height: 10,
-                        margin: EdgeInsets.only(left: 1, top:8, right: 10),
-                        child: MySeparator(),
-
+                      width: MediaQuery.of(context).size.width * .65,
+                      height: 10,
+                      margin: EdgeInsets.only(left: 1, top: 8, right: 10),
+                      child: MySeparator(),
                     ),
-
-
-
-
-
-
-
-
-
-                    // ),
-
-
-
-                    /*Row(
-
-
-
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
-
-                    children: [
-
-
-
-
-                      Container(
-                        // width:150,
-
-
-                        child:Text('Simple HairStyle',style: TextStyle(color: Colors.black,fontSize: 14,fontWeight: FontWeight.w600),)
-
-
-                      ),
-
-
-                      Container(
-                        margin: EdgeInsets.only(left: 30,right: 20),
-
-
-                          child:Text('300₹',style: TextStyle(color: Colors.grey,fontSize: 14,fontWeight: FontWeight.w600),)
-
-
-                      ),
-
-
-                    ],
-
-
-
-
-                  )*/
-
                   ],
-
-                )
-
-
-            ),
-
-
-
-
-
-
-
-
-
+                )),
           ],
-
         ),
-
-
       ),
-
     );
   }
 }

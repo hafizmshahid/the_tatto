@@ -235,16 +235,16 @@ class _RegisterScreen extends State<RegisterScreen> {
                               autofocus: true,
                               keyboardType: TextInputType.emailAddress,
                               textInputAction: TextInputAction.next,
-                              focusNode: _emailFocusNode,
+                             focusNode: _emailFocusNode,
                               validator: (email) =>
                               EmailValidator.validate(email)
                                   ? null
                                   : "Invalid email address",
                               onSaved: (value) => _notifier.signUpEmail = value,
-                             /* onFieldSubmitted: (_) {
+                              onFieldSubmitted: (_) {
                                 fieldFocusChange(
                                     context, _emailFocusNode, _phoneFocusNode);
-                              },*/
+                              },
                               style: TextStyle(
                                   fontSize: 16.0,
                                   color: Colors.white,
@@ -295,7 +295,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                               keyboardType: TextInputType.phone,
                               textInputAction: TextInputAction.next,
                               onSaved: (value) => _notifier.signUpPhone = value,
-                            //  focusNode: _emailFocusNode,
+                             focusNode: _phoneFocusNode,
                               validator: (phone) {
                                 Pattern pattern = r'^[0-9]*$';
                                 RegExp regex = new RegExp(pattern);
@@ -417,7 +417,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => HomeScreen(2)),
+                                          builder: (context) => HomeScreen(0)),
 
                                       // var savedValue = preferences.getString('value_key');
                                     );

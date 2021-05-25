@@ -15,14 +15,13 @@ void main() {
         ChangeNotifierProvider(create: (_) => AuthViewModel()),
       ], child: MyApp())
   );
-
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-     debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: false,
       color: Colors.black,
       home: new SplashScreen(),
       routes: <String, WidgetBuilder>{
@@ -45,11 +44,7 @@ class _SplashScreenState extends State<SplashScreen> {
   startTime() async {
     var _duration = new Duration(seconds: 5);
     return new Timer(_duration, navigationPage);
-
-
   }
-
-
 
 
   void navigationPage() {
@@ -60,7 +55,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     //_firebaseMessaging.getToken().then((String token) {
-   /*   assert(token != null);
+    /*   assert(token != null);
       setState(() {
         PreferenceUtils.init();
 
@@ -74,28 +69,25 @@ class _SplashScreenState extends State<SplashScreen> {
 
     });*/
 
-   startTime();
-
-
-
+    startTime();
   }
 
   @override
   Widget build(BuildContext context) {
     return new SafeArea(
       child: Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            padding: EdgeInsets.only(bottom: 5),
-            decoration: new BoxDecoration(
-              image: new DecorationImage(
-                image: new ExactAssetImage('images/bg_image.jpg'),
-                fit: BoxFit.fill,
+        body: Stack(
+          children: [
+            Container(
+              padding: EdgeInsets.only(bottom: 5),
+              decoration: new BoxDecoration(
+                image: new DecorationImage(
+                  image: new ExactAssetImage('images/bg_image.jpg'),
+                  fit: BoxFit.fill,
+                ),
               ),
-            ),
 
-            /* child: Stack(
+              /* child: Stack(
             children: <Widget>[
 
               // Expanded(
@@ -143,27 +135,27 @@ class _SplashScreenState extends State<SplashScreen> {
           )*/
 
 
-            /*
+              /*
 
           ),*/
-          ),
-          Align(alignment:Alignment.center,
+            ),
+            Align(alignment: Alignment.center,
 
 
-          child: Text("Tattoo",style: TextStyle(fontSize: 50,color: Colors.white,fontFamily: 'Dancing Script',fontWeight: FontWeight.w900)),)
-        ],
+              child: Text("Tattoo", style: TextStyle(fontSize: 50,
+                  color: Colors.white,
+                  fontFamily: 'Dancing Script',
+                  fontWeight: FontWeight.w900)),)
+          ],
+        ),
       ),
-      ),
 
 
-      );
-
+    );
   }
 
   Future<void> savetoken(String token) async {
     PreferenceUtils.setString(AppConstant.fcmtoken, token);
-
-
 
 
 /*

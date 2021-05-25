@@ -11,36 +11,36 @@ String locationSearchListToJson(List<LocationSearchList> data) => json.encode(Li
 class LocationSearchList {
   LocationSearchList({
     this.id,
+    this.distance,
     this.name,
     this.nameBy,
-    this.about,
     this.location,
-    this.website,
-    this.phoneNumber,
+    this.latitude,
+    this.longitude,
     this.profileImage,
     this.defaultOpening,
     this.defaultClosing,
   });
 
   int id;
+  int distance;
   String name;
   String nameBy;
-  String about;
   String location;
-  String website;
-  int phoneNumber;
+  String latitude;
+  String longitude;
   String profileImage;
   String defaultOpening;
   String defaultClosing;
 
   factory LocationSearchList.fromJson(Map<String, dynamic> json) => LocationSearchList(
     id: json["id"],
+    distance: json["distance"],
     name: json["name"],
     nameBy: json["name_by"],
-    about: json["about"],
     location: json["location"],
-    website: json["website"] == null ? null : json["website"],
-    phoneNumber: json["phone_number"],
+    latitude: json["latitude"],
+    longitude: json["longitude"],
     profileImage: json["profile_image"],
     defaultOpening: json["default_opening"],
     defaultClosing: json["default_closing"],
@@ -48,12 +48,12 @@ class LocationSearchList {
 
   Map<String, dynamic> toJson() => {
     "id": id,
+    "distance": distance,
     "name": name,
     "name_by": nameBy,
-    "about": about,
     "location": location,
-    "website": website == null ? null : website,
-    "phone_number": phoneNumber,
+    "latitude": latitude,
+    "longitude": longitude,
     "profile_image": profileImage,
     "default_opening": defaultOpening,
     "default_closing": defaultClosing,

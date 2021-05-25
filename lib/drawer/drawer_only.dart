@@ -60,7 +60,7 @@ class DrawerOnly extends StatelessWidget {
             height: 80,
             width: double.infinity,
             child: Text(
-              '${json.decode(_notifier.loginResponseSharePreference)['username']}',
+              'User Name',
               //     'UserName',
               style: TextStyle(
                   color: Colors.white,
@@ -105,7 +105,7 @@ class DrawerOnly extends StatelessWidget {
                 onTap: () {
                   Navigator.push(
                     ctxt,
-                    MaterialPageRoute(builder: (context) => HomeScreen(2)),
+                    MaterialPageRoute(builder: (context) => HomeScreen(0)),
 
                     // var savedValue = preferences.getString('value_key');
                   );
@@ -145,38 +145,38 @@ class DrawerOnly extends StatelessWidget {
 
                 },
               )),
-          Container(
-              alignment: Alignment.centerLeft,
-              margin: EdgeInsets.only(left: 10.0, top: 0.0),
-              child: ListTile(
-                title: Row(
-                  children: [
-                    Container(
-                      child: SvgPicture.asset("images/top_services.svg",
-                          color: Colors.white),
-                      width: 20,
-                      height: 20,
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      'Top Services',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'Montserrat'),
-                    ),
-                  ],
-                ),
-                onTap: () {
-                  Navigator.push(
-                      ctxt,
-                      new MaterialPageRoute(
-                          builder: (ctxt) => new TopService(0, "Explore All")));
-                },
-              )),
+          // Container(
+          //     alignment: Alignment.centerLeft,
+          //     margin: EdgeInsets.only(left: 10.0, top: 0.0),
+          //     child: ListTile(
+          //       title: Row(
+          //         children: [
+          //           Container(
+          //             child: SvgPicture.asset("images/top_services.svg",
+          //                 color: Colors.white),
+          //             width: 20,
+          //             height: 20,
+          //           ),
+          //           SizedBox(
+          //             width: 10,
+          //           ),
+          //           Text(
+          //             'Top Services',
+          //             style: TextStyle(
+          //                 color: Colors.white,
+          //                 fontSize: 15,
+          //                 fontWeight: FontWeight.w600,
+          //                 fontFamily: 'Montserrat'),
+          //           ),
+          //         ],
+          //       ),
+          //       onTap: () {
+          //         Navigator.push(
+          //             ctxt,
+          //             new MaterialPageRoute(
+          //                 builder: (ctxt) => new TopService(0, "Explore All")));
+          //       },
+          //     )),
           Container(
               alignment: Alignment.centerLeft,
               margin: EdgeInsets.only(left: 10.0, top: 0.0),

@@ -34,6 +34,8 @@ class DetailBarber extends StatefulWidget {
 
 class _DetailBarber extends State<DetailBarber>
     with SingleTickerProviderStateMixin {
+
+
   TabController _controller;
 
   @override
@@ -151,9 +153,6 @@ class _DetailBarber extends State<DetailBarber>
                         children: <Widget>[
                           TabAbout(name: "${widget.name}",),
                           GalleryView(),
-                          // Container(
-
-                          // transform: Matrix4.translationValues(),
                           ServiceTab(),
                         //  ReViewTab(),
 

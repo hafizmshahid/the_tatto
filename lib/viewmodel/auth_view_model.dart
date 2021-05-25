@@ -44,6 +44,7 @@ class AuthApi {
 
 class AuthViewModel extends BaseViewModel {
   String kLoginPreferenceId = "LoginPreferenceId";
+  String kProfilePreferenceId = "profileID";
 
   String signUpUserName,
       signUpEmail,
@@ -52,15 +53,31 @@ class AuthViewModel extends BaseViewModel {
       signUpName,
       signInEmail,
       artistSearchValue,
+      profileNewName,
+      traditionalStyleSearchValue,
       locationSearchListValue,
       shopSearchValue,
       loginResponseSharePreference,
+      profileResponseSharePreference,
+      appointDateSelect,
       forgetEmail,
       signInPassword;
+  List aboutStyleTitle= [
+    "first_services",
+    "second_services",
+    "third_services",
+    "four_services",
+    "five_services"
+  ];
+  var aboutSelectServices;
+
+
   //int aboutDataID ;
+  bool valueCheckBox = true;
   var authMsg;
   bool authError = true;
   bool isSignIn = false;
+  bool isProfileIn = false;
   bool isLogout = false;
   bool isStyleList = false;
   bool isArtistList = false;
@@ -69,6 +86,8 @@ class AuthViewModel extends BaseViewModel {
   bool isShopSearchList = false;
   bool isSignUp = false;
   bool isForget = false;
+  double lat;
+  double lng;
   List titleList = [
     "Realism or Realistic Tattoo Style",
     "Watercolor Tattoo Style",
@@ -78,20 +97,27 @@ class AuthViewModel extends BaseViewModel {
     "Japanese Tattoo Style",
     "Blackwork Tattoo Style"
   ];
+  List aboutImageList = [
+    "First_Image",
+    "Second_Image",
+    "Third_Image",
+    "Fourth_Image",
+    "Fifth_Image",
+    "Fifth_Image",
+  ];
   List<StyleList> styleList;
   List<ArtistSearchList> artistSearchList;
   List<ShopSearchList> shopSearchList;
   List<LocationSearchList> locationSearchList;
-  List <AboutData> aboutDataList;
+  List<AboutData> aboutDataList;
+  int totalPrice=0;
 
 
   // GlobalKey<FormState> signInForm = GlobalKey<FormState>();
   // GlobalKey<FormState> signUpForm = GlobalKey<FormState>();
   // GlobalKey<FormState> forgetForm = GlobalKey<FormState>();
 
-  bool validateAndSave({
-    @required FormState formstate,
-  }) {
+  bool validateAndSave({@required FormState formstate,}) {
     final form = formstate;
     if (form.validate()) {
       form.save();
@@ -100,41 +126,32 @@ class AuthViewModel extends BaseViewModel {
     return false;
   }
 
-
   Future<void> validateAndSubmitSignIn() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String email;
     setState(ViewState.kBusy);
     isSignIn = false;
     try {
-    //  if (validateAndSave(formstate: signInForm.currentState)) {
-        print(
-            "------------------Email: $signInEmail  Password: $signInPassword --------------");
-        final response = await http.post(kSignInApi,
-            body: {"email": signInEmail, "password": signInPassword});
-        var body = json.decode(response.body);
-        email= body['email'];
-        print("-----------------$body------------------");
-        print("-----------------$email------------------");
-        if (email != null) {
-          setState(ViewState.kIdle);
-          prefs.setString(kLoginPreferenceId, json.encode(body));
-          loginResponseSharePreference = prefs.getString(kLoginPreferenceId);
-          //   print("---------------------name :${json.decode(loginResponseSharePreference)['response'][0]['username']}-----------------");
-          isSignIn = true;
-          authError = false;
-          authMsg = "Login Successfully";
-          // //   authMsg = body['message'];
-          //   prefs.setString(kLoginId, json.encode(body));
-          // prefs.setBool(kIsLogin, true);
-        } else {
-          authError = true;
-          authMsg = body['detail'];
-          print(
-              "-------------------Sign  in not success ${authMsg = body['detail']}----------------");
-        }
-     // }
-
+      //  if (validateAndSave(formstate: signInForm.currentState)) {
+      print(
+          "------------------Email: $signInEmail  Password: $signInPassword --------------");
+      final response = await http.post(kSignInApi, body: {"email": signInEmail, "password": signInPassword});
+      var body = json.decode(response.body);
+      print("-----------------lkads${response.statusCode}------------------");
+      print("-----------------$body------------------");
+      if (response.statusCode == 200) {
+        isSignIn = true;
+        setState(ViewState.kIdle);
+        prefs.setString(kLoginPreferenceId, json.encode(body));
+        loginResponseSharePreference = prefs.getString(kLoginPreferenceId);
+        authError = false;
+        authMsg = "Login Successfully";
+        // //   authMsg = body['message'];
+      } else {
+        authError = true;
+      //  authMsg = body['detail'];
+       // print("-------------------Sign  in not success ${authMsg = body['detail']}----------------");
+      }
+      // }
       print("not success");
       authError = false;
     } catch (e) {
@@ -158,7 +175,7 @@ class AuthViewModel extends BaseViewModel {
         "password": signUpPassword
       });
       var body = json.decode(response.body);
-      print("-----------------asdfdas$body------------------");
+      print("-----------------$body------------------");
       if (!body['error']) {
         print("-----------------$body------------------");
         prefs.setString(kLoginPreferenceId, json.encode(body));
@@ -227,14 +244,18 @@ class AuthViewModel extends BaseViewModel {
   }
   Future<void> getUserLogout() async {
     String strTokenRefresh =
-    json.decode(loginResponseSharePreference)['tokens']["refresh"];
+        json.decode(loginResponseSharePreference)['tokens']["refresh"];
     setState(ViewState.kBusy);
     try {
       print("------------------refresh:$strTokenRefresh--------------");
-      final response = await http.post("https://tattooarts.herokuapp.com/auth/logout/", body: {"refresh":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYyMTU3Mzc1NywianRpIjoiNDFjZWE1M2U2NzMxNDdmNjg5ZTQyM2U5ZGY4Y2MyODYiLCJ1c2VyX2lkIjoyfQ.epIN3p76YgB_nJTbhQeY4kemkFz0xSt6lp81EKVMGIE"});
+      final response = await http
+          .post("https://tattooarts.herokuapp.com/auth/logout/", body: {
+        "refresh":
+            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYyMTU3Mzc1NywianRpIjoiNDFjZWE1M2U2NzMxNDdmNjg5ZTQyM2U5ZGY4Y2MyODYiLCJ1c2VyX2lkIjoyfQ.epIN3p76YgB_nJTbhQeY4kemkFz0xSt6lp81EKVMGIE"
+      });
       var body = json.decode(response.body);
       print("-----------------logout $body------------------");
-     /* if (!body['error']) {
+      /* if (!body['error']) {
         setState(ViewState.kIdle);
         isLogout = true;
         authError = false;
@@ -256,19 +277,21 @@ class AuthViewModel extends BaseViewModel {
     }
     setState(ViewState.kIdle);
   }
-
   Future<void> getStyleList() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    print("-----------------$traditionalStyleSearchValue------------------");
     isStyleList = false;
     setState(ViewState.kBusy);
     try {
-      final response = await http.get(kStylesApi);
+      final response = await http.get("https://tattooarts.herokuapp.com/traditionalsearch?search=$traditionalStyleSearchValue");
       var body = json.decode(response.body);
       //  print("-----------------$body------------------");
       if (body != null) {
         print("-----------------Response : ${response.body}------------------");
         styleList = styleListFromJson(response.body);
-        print("-----------------styleList : ${styleList.length}------------------");
+        print(
+            "-----------------styleList : ${styleList.length}------------------");
         setState(ViewState.kIdle);
         isStyleList = true;
         authError = false;
@@ -294,26 +317,29 @@ class AuthViewModel extends BaseViewModel {
     }
     setState(ViewState.kIdle);
   }
-  Future<void> getArtistList() async {
-    isArtistList= false;
-   // final SharedPreferences prefs = await SharedPreferences.getInstance();\artistSearchValue
-    print("-----------------artistSearchValue $artistSearchValue------------------");
+  Future<void> getArtistList(double lat,double lng) async {
+    isArtistList = false;
+    // final SharedPreferences prefs = await SharedPreferences.getInstance();\artistSearchValue
+    print(
+        "-----------------artistSearchValue $artistSearchValue------------------");
     setState(ViewState.kBusy);
     try {
-      final response = await http.get("https://tattooarts.herokuapp.com/artistsearch/?search=$artistSearchValue");
+      final response = await http.get("https://tattooarts.herokuapp.com/artistsearch/?search=$artistSearchValue&latitude=$lat&longitude=$lng");
+     // final response = await http.get("https://tattooarts.herokuapp.com/artistsearch/?search=8");
       var body = json.decode(response.body);
       //  print("-----------------$body------------------");
       if (body != null) {
         print("-----------------Response : ${response.body}------------------");
         artistSearchList = artistSearchListFromJson(response.body);
-        print("-----------------styleList : ${artistSearchList.length}------------------");
+        print(
+            "-----------------styleList : ${artistSearchList.length}------------------");
         setState(ViewState.kIdle);
         isArtistList = true;
         authError = false;
         // authMsg = body['message'];
         //   prefs.setString(kLoginId, json.encode(body));
         //   prefs.setBool(kIsLogin, true);
-       /* prefs.setString(kLoginPreferenceId, json.encode(body));
+        /* prefs.setString(kLoginPreferenceId, json.encode(body));
         loginResponseSharePreference = prefs.getString(kLoginPreferenceId);*/
       } else {
         authError = true;
@@ -332,19 +358,22 @@ class AuthViewModel extends BaseViewModel {
     }
     setState(ViewState.kIdle);
   }
-  Future<void> getShopNameList() async {
+  Future<void> getShopNameList(double lat,double lng) async {
     isShopSearchList = false;
     // final SharedPreferences prefs = await SharedPreferences.getInstance();\artistSearchValue
-    print("-----------------artistSearchValue $shopSearchValue------------------");
+    print(
+        "-----------------artistSearchValue $shopSearchValue------------------");
     setState(ViewState.kBusy);
     try {
-      final response = await http.get("https://tattooarts.herokuapp.com/shopsearch/?search=$shopSearchValue");
+      final response = await http.get(
+          "https://tattooarts.herokuapp.com/shopsearch/?search=$shopSearchValue&latitude=$lat&longitude=$lng");
       var body = json.decode(response.body);
-        print("-----------------$body------------------");
+      print("-----------------$body------------------");
       if (body != null) {
         print("-----------------Response : ${response.body}------------------");
         shopSearchList = shopSearchListFromJson(response.body);
-        print("-----------------styleList : ${shopSearchList.length}------------------");
+        print(
+            "-----------------styleList : ${shopSearchList.length}------------------");
         setState(ViewState.kIdle);
         isShopSearchList = true;
         authError = false;
@@ -373,16 +402,19 @@ class AuthViewModel extends BaseViewModel {
   Future<void> getLocationSearchList() async {
     isLocationSearchList = false;
     // final SharedPreferences prefs = await SharedPreferences.getInstance();\artistSearchValue
-    print("-----------------locationSearchListValue $locationSearchListValue------------------");
+    print(
+        "-----------------locationSearchListValue $locationSearchListValue------------------");
     setState(ViewState.kBusy);
     try {
-      final response = await http.get("https://tattooarts.herokuapp.com/locationsearch/?search=$locationSearchListValue");
+      final response = await http.get(
+          "https://tattooarts.herokuapp.com/locationsearch/?search=$locationSearchListValue&latitude=$lat&longitude=$lng");
       var body = json.decode(response.body);
       //  print("-----------------$body------------------");
       if (body != null) {
         print("-----------------Response : ${response.body}------------------");
         locationSearchList = locationSearchListFromJson(response.body);
-        print("-----------------styleList : ${locationSearchList.length}------------------");
+        print(
+            "-----------------styleList : ${locationSearchList.length}------------------");
         setState(ViewState.kIdle);
         isLocationSearchList = true;
         authError = false;
@@ -408,21 +440,22 @@ class AuthViewModel extends BaseViewModel {
     }
     setState(ViewState.kIdle);
   }
-
-  Future<void> getAboutDataList( int aboutDataID) async {
+  Future<void> getAboutDataList(int aboutDataID) async {
     isAboutDataList = false;
     // final SharedPreferences prefs = await SharedPreferences.getInstance();\artistSearchValue
     print("-----------------aboutDataID $aboutDataID------------------");
     setState(ViewState.kBusy);
     try {
-      final response = await http.get("https://tattooarts.herokuapp.com/Shop_artist/$aboutDataID");
+    // final response = await http.get("https://tattooarts.herokuapp.com/Shop_artist/$aboutDataID");
+      final response = await http.get("https://tattooarts.herokuapp.com/Shop_artist/1");
       var body = json.decode(response.body);
       //  print("-----------------$body------------------");
       if (body != null) {
         print("-----------------Response : ${response.body}------------------");
 
         aboutDataList = aboutDataFromJson(response.body);
-        print("-----------------isAboutDataList : ${aboutDataList.length}------------------");
+        print(
+            "-----------------isAboutDataList : ${aboutDataList.length}------------------");
         setState(ViewState.kIdle);
         isAboutDataList = true;
         authError = false;
@@ -448,9 +481,86 @@ class AuthViewModel extends BaseViewModel {
     }
     setState(ViewState.kIdle);
   }
+  Future<void> priceAdd(int price) async {
+    totalPrice +=price;
+    notifyListeners();
+  }
+  Future<void> priceSub(int price) async {
+    totalPrice -=price;
+    notifyListeners();
+  }
+  Future<void> getProfile(int id) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    print("-----------------$traditionalStyleSearchValue------------------");
+    isStyleList = false;
+    setState(ViewState.kBusy);
+    try {
+      final response = await http.get("https://tattooarts.herokuapp.com/auth/get_user/$id");
+      //final response = await http.get("https://tattooarts.herokuapp.com/auth/get_user/5");
+      var body = json.decode(response.body);
+       print("-----------------$body------------------");
+      if (response.statusCode ==200) {
 
 
+        // authMsg = body['message'];
+        //   prefs.setString(kLoginId, json.encode(body));
+        //   prefs.setBool(kIsLogin, true);
+        prefs.setString(kProfilePreferenceId, json.encode(body));
+        profileResponseSharePreference = prefs.getString(kProfilePreferenceId);
+        print("-----------------${json.decode(profileResponseSharePreference)['username']}------------------");
+        print("-----------------profileResponseSharePreference $profileResponseSharePreference------------------");
+      } else {
+        authError = true;
+        // authMsg = body['message'];
+        print(
+            "-------------------Sign  in not success ${authMsg = body['message']}----------------");
+      }
+
+      print("not success");
+      authError = false;
+    } catch (e) {
+      //print("-------------------Sign  in not success ${e.message.toString()}----------------");
+      authMsg = "Error ";
+      // authMsg = "Error ${e.message.toString()}";
+      authError = true;
+    }
+    setState(ViewState.kIdle);
+  }
 
 
+  Future<void> validateAndSubmitProfile() async {
+
+    try {
+      //  if (validateAndSave(formstate: signInForm.currentState)) {
+      print(
+          "------------------validateAndSubmitProfile: $profileNewName  --------------");
+      final response = await http.put("https://tattooarts.herokuapp.com/auth/update_user/1/", body: {"username": profileNewName, "image":""});
+      var body = json.decode(response.body);
+      print("-----------------$body------------------");
+      if (response.statusCode == 200) {
+        isProfileIn= true;
+        // setState(ViewState.kIdle);
+        // prefs.setString(kLoginPreferenceId, json.encode(body));
+        // loginResponseSharePreference = prefs.getString(kLoginPreferenceId);
+        // authError = false;
+        // authMsg = "Login Successfully";
+        print("-----------------dfaskljfalldks------------------");
+        // //   authMsg = body['message'];
+      } else {
+        authError = true;
+        //  authMsg = body['detail'];
+        // print("-------------------Sign  in not success ${authMsg = body['detail']}----------------");
+      }
+      // }
+      print("not success");
+      authError = false;
+    } catch (e) {
+      // print("-------------------Sign  in not success ${e.message.toString()}----------------");
+      //  authMsg = "Error ${e.message.toString()}";
+      authError = true;
+    }
+    setState(ViewState.kIdle);
+  }
 
 }

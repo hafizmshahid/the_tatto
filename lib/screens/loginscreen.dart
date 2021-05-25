@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:the_tatto/utils/app_color.dart';
 import 'package:connectivity/connectivity.dart';
@@ -24,6 +25,7 @@ import 'package:the_tatto/viewmodel/auth_view_model.dart';
 import 'forgotpassword.dart';
 import 'homescreen.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:geolocator/geolocator.dart';
 /*
 void main() {
   runApp(new MaterialApp(
@@ -51,6 +53,58 @@ class _LoginScreen extends State<LoginScreen> {
   ProgressDialog pr;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   GlobalKey<FormState> signInForm = GlobalKey<FormState>();
+  /// Determine the current position of the device.
+  ///
+  /// When the location services are not enabled or permissions
+  /// are denied the `Future` will return an error.
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+    return await Geolocator.getCurrentPosition();
+  }
+  var position;
+  void _getUserLocation() async {
+    position = await GeolocatorPlatform.instance
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+
+    setState(() {
+      LatLng  currentPostion = LatLng(position.latitude, position.longitude);
+      print("--------------------lat:${position.latitude},longitude ${position.longitude}--------");
+    });
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -246,26 +300,35 @@ class _LoginScreen extends State<LoginScreen> {
                       //  color: const Color(0xFF18FF10),
                       color: kGreenColor,
                       onPressed: () async {
+                       _notifier. getProfile(1);
+                               Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                            builder: (context) => HomeScreen(0)));
+
+
                         if(signInForm.currentState.validate()){
                           signInForm.currentState.save();
 
                  /*       Navigator.push(
                             context,
                             MaterialPageRoute(
-                            builder: (context) => HomeScreen(2)));*/
+                            builder: (context) => HomeScreen(0)));*/
                         showProcessBar(context);
                         await _notifier.validateAndSubmitSignIn();
+                        print("-----------------${_notifier.isSignIn}--------------");
                         if (_notifier.isSignIn) {
                           Navigator.pop(context);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => HomeScreen(2)),
+                                builder: (context) => HomeScreen(0)),
                             // var savedValue = preferences.getString('value_key');
                           );
                          // _notifier.isSignIn = false;
                           // Fluttertoast.showToast(msg: "${_notifier.authMsg}", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.BOTTOM,);
-                        } else {
+                        }
+                        else {
                           Navigator.pop(context);
                           print("----------------not ok  ${_notifier.authMsg}------------------");
                           Fluttertoast.showToast(
@@ -295,7 +358,8 @@ class _LoginScreen extends State<LoginScreen> {
                             preferences.setString('email', _email);
                             preferences.setString('password', _password);
 
-                         */ /* Navigator.push(
+                         */
+                          /* Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => HomeScreen(2)),
@@ -303,8 +367,8 @@ class _LoginScreen extends State<LoginScreen> {
                             // var savedValue = preferences.getString('value_key');
                           );*/ /*
                         }*/
-                      } else {
-
+                      }
+                        else {
                           Fluttertoast.showToast(
                             msg: "Please fill all field",
                             toastLength: Toast.LENGTH_SHORT,
@@ -333,11 +397,11 @@ class _LoginScreen extends State<LoginScreen> {
                           alignment: FractionalOffset.bottomCenter,
                           child: GestureDetector(
                             onTap: () {
-                              Navigator.push(
+                            /*  Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => RegisterScreen()),
-                              );
+                              );*/
                             },
                             child: new Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -453,7 +517,7 @@ class _LoginScreen extends State<LoginScreen> {
 
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => HomeScreen(2)),
+            MaterialPageRoute(builder: (context) => HomeScreen(1)),
           );
         } else if (sucess == false) {
           var msg = body['msg'];

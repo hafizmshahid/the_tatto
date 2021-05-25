@@ -225,67 +225,84 @@ class _TopService extends State<StyleSearchScreen> {
                               height: 300,
                               child: !_notifier.isLocationSearchList
                                   ? Container(
-                                      height: 50,
+                                      height: 30,
                                       child: SpinKitWave(
                                         color: Colors.white,
                                         size: 20,
                                       ),
                                     )
-                                  : ListView(
-                                      children: <Widget>[
-                                        Container(
-                                          child: _notifier.locationSearchList
-                                                      .length ==
-                                                  0
-                                              ? Container(
-                                            height: 300,
-                                                  child: Center(
-                                                    child: Text(
-                                                      "Not Found",
-                                                      style: TextStyle(
-                                                          color:
-                                                              kPrimaryTextColor,
-                                                          fontSize: 15),
-                                                    ),
-                                                  ),
-                                                )
-                                              : ListView.builder(
-                                                  shrinkWrap: true,
-                                                  physics:
-                                                      NeverScrollableScrollPhysics(),
-                                                  itemBuilder:
-                                                      (BuildContext context,
-                                                          int index) {
-                                                    return TopServiceDataNew(
-                                                      category:
-                                                          "${_notifier.locationSearchList[index].name}",
-                                                      address: _notifier
-                                                          .locationSearchList[
-                                                              index]
-                                                          .location,
-                                                      imageUrl: _notifier
-                                                          .locationSearchList[
-                                                              index]
-                                                          .profileImage,
-                                                      userId: _notifier
-                                                          .locationSearchList[
-                                                      index]
-                                                          .id,
-                                                      name:  _notifier
-                                                          .locationSearchList[
-                                                      index]
-                                                          .name,
-                                                      time:
-                                                          "${_notifier.locationSearchList[index].defaultOpening} - ${_notifier.locationSearchList[index].defaultClosing}",
-                                                    );
-                                                  },
-                                                  itemCount: _notifier
-                                                      .locationSearchList
-                                                      .length,
-                                                ),
+                                  : Container(
+                                    child:  _notifier.locationSearchList.length == 0
+                                        ? Container(
+                                      margin: EdgeInsets.only(top: 20),
+                                      child: Center(
+                                        child: Text(
+                                          "Not Found",
+                                          style: TextStyle(
+                                              color: kPrimaryTextColor,
+                                              fontSize: 15),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ):ListView(
+                                        children: <Widget>[
+                                          Container(
+                                            child: _notifier.locationSearchList
+                                                        .length ==
+                                                    0
+                                                ? Container(
+                                              height: 300,
+                                                    child: Center(
+                                                      child: Text(
+                                                        "Not Found",
+                                                        style: TextStyle(
+                                                            color:
+                                                                kPrimaryTextColor,
+                                                            fontSize: 15),
+                                                      ),
+                                                    ),
+                                                  )
+                                                : ListView.builder(
+                                                    shrinkWrap: true,
+                                                    physics:
+                                                        NeverScrollableScrollPhysics(),
+                                                    itemBuilder:
+                                                        (BuildContext context,
+                                                            int index) {
+                                                      return TopServiceDataNew(
+                                                        category:
+                                                            "${_notifier.locationSearchList[index].name}",
+                                                        address: _notifier
+                                                            .locationSearchList[
+                                                                index]
+                                                            .location,
+                                                        imageUrl: _notifier
+                                                            .locationSearchList[
+                                                                index]
+                                                            .profileImage,
+                                                        userId: _notifier
+                                                            .locationSearchList[
+                                                        index]
+                                                            .id,
+                                                        distance: _notifier
+                                                            .locationSearchList[
+                                                        index]
+                                                            .distance,
+                                                        name:  _notifier
+                                                            .locationSearchList[
+                                                        index]
+                                                            .name,
+                                                        time:
+                                                            "${_notifier.locationSearchList[index].defaultOpening} - ${_notifier.locationSearchList[index].defaultClosing}",
+                                                      );
+                                                    },
+                                                    itemCount: _notifier
+                                                        .locationSearchList
+                                                        .length,
+                                                  ),
+                                          ),
+                                        ],
+                                      ),
+                                  ),
                             )
                           : Container(),
                     ],

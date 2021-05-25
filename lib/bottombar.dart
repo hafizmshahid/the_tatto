@@ -26,24 +26,26 @@ class BottomBar1 extends State<BottomBar> {
     return new MaterialApp(
       color: Colors.black,
       home: DefaultTabController(
-        length: 5,
+        length: 4,
         initialIndex: widget.index,
         child: new Scaffold(
           body: TabBarView(
             physics: NeverScrollableScrollPhysics(),
             children: [
-              Appoinment(),
-              Map(),
               FgHome(),
+              Appoinment(),
+            //  Map(),
+
               Notification1(),
               Profile(),
             ],
           ),
           bottomNavigationBar: new TabBar(
             tabs: [
-              Tab(icon: Icon(Icons.calendar_today,color: Colors.white,)),
-              Tab(icon: Icon(Icons.pin_drop_rounded,color: Colors.white,)),
               Tab(icon: Icon(Icons.home,color: Colors.white,)),
+              Tab(icon: Icon(Icons.calendar_today,color: Colors.white,)),
+             // Tab(icon: Icon(Icons.pin_drop_rounded,color: Colors.white,)),
+
               Tab(icon: Icon(Icons.notification_important,color: Colors.white,)),
               Tab(icon: Icon(Icons.person,color: Colors.white,)),
             ],

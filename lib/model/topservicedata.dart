@@ -15,10 +15,11 @@ class TopServiceDataNew extends StatelessWidget {
   final String time;
   final String name;
   final int userId;
+  final int distance;
 
 
   const TopServiceDataNew(
-      {Key key, this.category, this.imageUrl, this.address, this.time, this.userId, this.name})
+      {Key key, this.category, this.imageUrl, this.address, this.time, this.userId, this.name, this.distance})
       : super(key: key);
 
   @override
@@ -199,7 +200,7 @@ class TopServiceDataNew extends StatelessWidget {
                                                 )),
                                           ),
                                           TextSpan(
-                                              text: "1km",
+                                              text: " $distance km",
                                               style: TextStyle(
                                                   color: Colors.grey,
                                                   fontSize: 14,

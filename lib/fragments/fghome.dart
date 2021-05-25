@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:the_tatto/ResponseModel/StyleList.dart';
 import 'package:the_tatto/ResponseModel/bannerResponse.dart';
@@ -46,6 +48,76 @@ class _FgHome extends State<FgHome> {
   List<String> image12 = new List<String>();
   List<CategoryData> categorydataList = new List<CategoryData>();
   List<SalonData> salondataList = new List<SalonData>();
+  double lat;
+  double lng;
+
+  bool serviceEnabled;
+
+  Position position;
+  String str = "one.two";
+
+//Removes everything after first '.'
+
+  Future<void> _determinePosition() async {
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (serviceEnabled) {
+      print("-------------Location services are allow------------");
+      position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      lat = position.latitude;
+      lng = position.longitude;
+    } else if (!serviceEnabled) {
+      print("-------------Location services are disabled------------");
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.deniedForever) {
+      print(
+          "-------------Location permissions are permantly denied, we cannot request permissions------------");
+      showLocationPermissionDialog(context, () async {
+        // AppSettings.openAppSettings();
+        Navigator.pop(context);
+        _determinePosition();
+      }, "You cannot user this application until you allow location,Location permissions are permantly denied please allow form Setting");
+    }
+    if (permission == LocationPermission.denied) {
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        print(
+            "-------------Location permissions are denied (actual value: $permission).-----------");
+        showLocationPermissionDialog(context, () async {
+          await Permission.location.request();
+          Navigator.pop(context);
+          _determinePosition();
+        }, "You cannot user this application until you allow location");
+      }
+    }
+  }
+
+  showLocationPermissionDialog(
+      BuildContext context, GestureTapCallback onPressed, String msg) {
+    // set up the buttons
+    Widget continueButton = FlatButton(child: Text("OK"), onPressed: onPressed);
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Location Permission Required"),
+      content: Text(msg),
+      actions: [
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 
   int index = 0;
   ProgressDialog pr;
@@ -65,6 +137,7 @@ class _FgHome extends State<FgHome> {
   @override
   void initState() {
     super.initState();
+    _determinePosition();
     pr = new ProgressDialog(context);
     isExpandedShopList = false;
     isExpandedArtistList = false;
@@ -95,166 +168,9 @@ class _FgHome extends State<FgHome> {
     // CheckNetwork();
   }
 
-  void CheckNetwork() async {
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.mobile) {
-      pr.show();
-      CallApiforBanner();
-      CallApiForCategory();
-      CallApiForSalon();
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      pr.show();
-      CallApiforBanner();
-      CallApiForCategory();
-      CallApiForSalon();
-    } else {
-      toastMessage("No Internet Connection");
-    }
-  }
-
-  void CallApiforBanner() {
-    pr.hide();
-    RestClient(Retro_Api().Dio_Data()).banners().then((response) {
-      setState(() {
-        if (response.success = true) {
-          print(response.data.length);
-          banner_image.addAll(response.data);
-          image12.clear();
-          for (int i = 0; i < banner_image.length; i++) {
-            image12.add(banner_image[i].imagePath + banner_image[i].image);
-          }
-          int length123 = image12.length;
-          print("StringlistSize:$length123");
-          pr.hide();
-        } else {
-          pr.hide();
-          toastMessage("No Data");
-        }
-      });
-    }).catchError((Object obj) {
-      pr.hide();
-      print("error:$obj");
-      print(obj.runtimeType);
-      toastMessage("Internal Server Error");
-    });
-  }
-
-  void CallApiForCategory() {
-    pr.hide();
-    RestClient(Retro_Api().Dio_Data()).categories().then((response) {
-      setState(() {
-        if (response.success = true) {
-          print(response.data.length);
-          categorydataList.addAll(response.data);
-          int size = categorydataList.length;
-
-          pr.hide();
-        } else {
-          pr.hide();
-          toastMessage("No Data");
-        }
-      });
-    }).catchError((Object obj) {
-      pr.hide();
-      print("error:$obj");
-      print(obj.runtimeType);
-      toastMessage("Internal Server Error");
-    });
-  }
-
-  void CallApiForSalon() {
-    pr.hide();
-    RestClient(Retro_Api().Dio_Data()).salons().then((response) {
-      setState(() {
-        if (response.success = true) {
-          print(response.data.length);
-          salondataList.addAll(response.data);
-          int size = categorydataList.length;
-
-          pr.hide();
-        } else {
-          pr.hide();
-          toastMessage("No Data");
-        }
-      });
-    }).catchError((Object obj) {
-      pr.hide();
-      print("error:$obj");
-      print(obj.runtimeType);
-      toastMessage("Internal Server Error");
-    });
-  }
-
-  CarouselSlider carouselSlider;
-  int _current = 0;
-
-  List imgList = [
-    'images/slider1.jpg',
-    'images/slider2.jpg',
-    'images/slider3.jpg',
-  ];
-  List headingList = [
-    'Tatto Style',
-    'Tatto Style 2',
-    'Tatto Style 3',
-  ];
-
-  List categorydatalist = [
-    {
-      "category": "All",
-      "dark_color": const Color(0xFFffb5cc),
-      "light_color": const Color(0xFFffc8de),
-    },
-    {
-      "category": "Tattoo Artist Name",
-      "dark_color": const Color(0xFFffb5b5),
-      "light_color": const Color(0xFFffc8c8)
-    },
-    {
-      "category": "Shop Name",
-      "dark_color": const Color(0xFFffb5b5),
-      "light_color": const Color(0xFFffc8c8)
-    },
-  ];
-
-  List userdetails = [
-    {"first_name": "1", "last_name": "11", "imageURL": "Salon"},
-    {"first_name": "2", "last_name": "11", "imageURL": "Styling"},
-    {"first_name": "3", "last_name": "11", "imageURL": "Mackup"},
-    {"first_name": "3", "last_name": "11", "imageURL": "Shaving"},
-    {"first_name": "3", "last_name": "11", "imageURL": "Shampoo"},
-  ];
-
-  List servicedetail = [
-    {
-      "service_name": "Salon",
-      "image": "images/salon.svg",
-    },
-    {"service_name": "Styling", "image": "images/styling.svg"},
-    {
-      "service_name": "Mackup",
-      "image": "images/shampoo.svg",
-    },
-    {
-      "service_name": "Shaving",
-      "image": "images/shaving.svg",
-    },
-    {
-      "service_name": "Shampoo",
-      "image": "images/shampoo.svg",
-    },
-  ];
-
-  List<T> map<T>(List list, Function handler) {
-    List<T> result = [];
-    for (var i = 0; i < list.length; i++) {
-      result.add(handler(i, list[i]));
-    }
-    return result;
-  }
-
   final GlobalKey<ScaffoldState> _drawerscaffoldkey =
       new GlobalKey<ScaffoldState>();
+  GlobalKey<FormState> traditionalStyleForm = GlobalKey<FormState>();
   GlobalKey<FormState> artistForm = GlobalKey<FormState>();
   GlobalKey<FormState> shopSearchForm = GlobalKey<FormState>();
 
@@ -279,11 +195,10 @@ class _FgHome extends State<FgHome> {
     return BaseScaffold(
         appBarHeading: "Home",
         isBackArrow: false,
+        internetFunction: false,
         body: Stack(
           children: [
-            Container(
-
-            ),
+            Container(),
             SingleChildScrollView(
               controller: _scrollController,
               child: Column(
@@ -304,61 +219,80 @@ class _FgHome extends State<FgHome> {
                       ),
                       borderRadius: BorderRadius.circular(10.0),
                     ),
-                    child: TextFormField(
-                      style: TextStyle(
-                          fontSize: 14.0,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'Montserrat'),
-                      readOnly: true,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        contentPadding: EdgeInsets.only(top: 0,bottom: 0,left: 10),
-                        suffixIcon: InkWell(
-                          onTap: () {
-                            if (!isExpandedStyleList) {
-                              setState(() {
-                                isExpandedStyleList = true;
-                                _notifier.getStyleList();
-                              });
-                            } else if (isExpandedStyleList) {
-                              setState(() {
-                                isExpandedStyleList = false;
-                              });
-                            }
-
-                            // Navigator.push(context, new MaterialPageRoute(builder: (ctxt) => new SearchResultShowScreen(0,"Artist Name")));
-                          },
-                          child: new Icon(
-                            Icons.search,
+                    child: Form(
+                      key: traditionalStyleForm,
+                      child: TextFormField(
+                        style: TextStyle(
+                            fontSize: 14.0,
                             color: Colors.black,
-                          ),
-                        ),
-                        hintText: 'Traditional Tattoo Style',
-                        hintStyle: TextStyle(
-                            fontSize: 17.0,
-                            color: Colors.black.withOpacity(0.5)),
-                        border: InputBorder.none,
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
-                          borderRadius: BorderRadius.circular(20.0),
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Montserrat'),
+                     //   readOnly: true,
+                        onSaved: (String value) {
+                          value == null
+                              ? _notifier.traditionalStyleSearchValue = ""
+                              : _notifier.traditionalStyleSearchValue =
+                              value.toString().trim();
+                        },
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding:
+                              EdgeInsets.only(top: 0, bottom: 0, left: 10),
+                          suffixIcon: InkWell(
+                            onTap: () {
+                              if (traditionalStyleForm.currentState
+                                  .validate()) {
+                                traditionalStyleForm.currentState.save();
+                                if (serviceEnabled) {
+                                  print(
+                                      "--------------latitude:$lat longitude:$lng-----------------");
+                                }
+                                if (!isExpandedStyleList) {
+                                  setState(() {
+                                    isExpandedStyleList = true;
+                                    _notifier.lat = lat;
+                                    _notifier.lng = lng;
+                                    _notifier.getStyleList();
+                                  });
+                                } else if (isExpandedStyleList) {
+                                  setState(() {
+                                    isExpandedStyleList = false;
+                                  });
+                                }
 
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
-                          borderRadius: BorderRadius.circular(20.0),
+                                // Navigator.push(context, new MaterialPageRoute(builder: (ctxt) => new SearchResultShowScreen(0,"Artist Name")));
+                              }
+                            },
+                            child: new Icon(
+                              Icons.search,
+                              color: Colors.black,
+                            ),
+                          ),
+                          hintText: 'Traditional Tattoo Style',
+                          hintStyle: TextStyle(
+                              fontSize: 17.0,
+                              color: Colors.black.withOpacity(0.5)),
+                          border: InputBorder.none,
+
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
                         ),
                       ),
                     ),
                   ),
                   isExpandedStyleList
                       ? Container(
-                          height: 500,
                           child: !_notifier.isStyleList
                               ? Container(
                                   height: 50,
@@ -367,23 +301,36 @@ class _FgHome extends State<FgHome> {
                                     size: 20,
                                   ),
                                 )
-                              : ListView.builder(
-                                  shrinkWrap: true,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return StyleSearchItems(
-                                      headingName:
-                                          "${_notifier.styleList[index].styleName}",
-                                      //   imageUrl:"${_notifier.styleList[index].profileImage}" ,
-                                      imageUrl:
-                                          "https://tattooarts.herokuapp.com${_notifier.styleList[index].profileImage}",
-                                      /* dark_color: kGreenColor,
+                              : Container(
+                                child:  _notifier.styleList.length == 0
+                                    ? Container(
+                                  margin: EdgeInsets.only(top: 20),
+                                  child: Center(
+                                    child: Text(
+                                      "Not Found",
+                                      style: TextStyle(
+                                          color: kPrimaryTextColor,
+                                          fontSize: 15),
+                                    ),
+                                  ),
+                                ):ListView.builder(
+                                    shrinkWrap: true,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return StyleSearchItems(
+                                        headingName:
+                                            "${_notifier.styleList[index].styleName}",
+                                        //   imageUrl:"${_notifier.styleList[index].profileImage}" ,
+                                        imageUrl:
+                                            "https://tattooarts.herokuapp.com${_notifier.styleList[index].profileImage}",
+                                        /* dark_color: kGreenColor,
                           light_color: kGreenColor,*/
-                                    );
-                                  },
-                                  itemCount: _notifier.styleList.length,
-                                  //   itemCount: _styleList.styleName.length,
-                                ),
+                                      );
+                                    },
+                                    itemCount: _notifier.styleList.length,
+                                    //   itemCount: _styleList.styleName.length,
+                                  ),
+                              ),
                         )
                       : Container(),
                   SizedBox(
@@ -410,10 +357,13 @@ class _FgHome extends State<FgHome> {
                             color: Colors.black,
                             fontWeight: FontWeight.w600,
                             fontFamily: 'Montserrat'),
-                        onSaved: (String value){ value == null ? _notifier.artistSearchValue = "": _notifier.artistSearchValue = value.toString().trim();
-
+                        onSaved: (String value) {
+                          value == null
+                              ? _notifier.artistSearchValue = ""
+                              : _notifier.artistSearchValue =
+                                  value.toString().trim();
                         },
-                       /* validator: (String value) {
+                        /* validator: (String value) {
                           if (value.isEmpty) {
 
                             return "Empty !";
@@ -427,10 +377,11 @@ class _FgHome extends State<FgHome> {
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.white,
-                          contentPadding: EdgeInsets.only(top: 0,bottom: 0,left: 10),
+                          contentPadding:
+                              EdgeInsets.only(top: 0, bottom: 0, left: 10),
                           suffixIcon: InkWell(
                             onTap: () {
-                              if(artistForm.currentState.validate()){
+                              if (artistForm.currentState.validate()) {
                                 artistForm.currentState.save();
 
                                 if (!isExpandedArtistList)
@@ -439,7 +390,7 @@ class _FgHome extends State<FgHome> {
                                     FocusScope.of(context).unfocus();
                                     /*_scrollController..animateTo(180.0,
     duration: Duration(milliseconds: 500), curve: Curves.ease);*/
-                                    _notifier.getArtistList();
+                                    _notifier.getArtistList(lat, lng);
                                   });
                                 else if (isExpandedArtistList) {
                                   setState(() {
@@ -466,7 +417,8 @@ class _FgHome extends State<FgHome> {
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.white),
                             borderRadius: BorderRadius.circular(20.0),
-                          ), focusedErrorBorder: OutlineInputBorder(
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.white),
                             borderRadius: BorderRadius.circular(20.0),
                           ),
@@ -480,9 +432,8 @@ class _FgHome extends State<FgHome> {
                   ),
                   isExpandedArtistList
                       ? Container(
-                          height: 350,
                           margin: EdgeInsets.only(
-                            bottom: 100,
+                            bottom: 10,
                           ),
                           //left: 20, right: 20),
                           child: !_notifier.isArtistList
@@ -496,6 +447,7 @@ class _FgHome extends State<FgHome> {
                               : Container(
                                   child: _notifier.artistSearchList.length == 0
                                       ? Container(
+                                          margin: EdgeInsets.only(top: 20),
                                           child: Center(
                                             child: Text(
                                               "Not Found",
@@ -518,12 +470,13 @@ class _FgHome extends State<FgHome> {
                                               imageUrl: _notifier
                                                   .artistSearchList[index]
                                                   .profileImage,
-                                              userId:_notifier
+                                              userId: _notifier
+                                                  .artistSearchList[index].id,
+                                              distance: _notifier
                                                   .artistSearchList[index]
-                                                  .id ,
-                                              name:_notifier
-                                              .artistSearchList[index]
-                                              .name ,
+                                                  .distance,
+                                              name: _notifier
+                                                  .artistSearchList[index].name,
                                               time:
                                                   "${_notifier.artistSearchList[index].defaultOpening} - ${_notifier.artistSearchList[index].defaultClosing}",
                                             );
@@ -564,7 +517,7 @@ class _FgHome extends State<FgHome> {
                               color: Colors.black,
                               fontWeight: FontWeight.w600,
                               fontFamily: 'Montserrat'),
-                       /*   validator: (String value) {
+                          /*   validator: (String value) {
                             if (value.isEmpty) {
 
                               return "Empty !";
@@ -575,7 +528,11 @@ class _FgHome extends State<FgHome> {
                               return null;
                             }
                           },*/
-                          onSaved: (String value){ value == null ? _notifier.shopSearchValue  = "": _notifier.shopSearchValue  = value.toString().trim();
+                          onSaved: (String value) {
+                            value == null
+                                ? _notifier.shopSearchValue = ""
+                                : _notifier.shopSearchValue =
+                                    value.toString().trim();
                           },
                           decoration: InputDecoration(
                             hintText: 'Search by Shop Name',
@@ -588,7 +545,7 @@ class _FgHome extends State<FgHome> {
                                   if (!isExpandedShopList)
                                     setState(() {
                                       FocusScope.of(context).unfocus();
-                                      _notifier.getShopNameList();
+                                      _notifier.getShopNameList(lat, lng);
                                       isExpandedShopList = true;
                                     });
                                   else if (isExpandedShopList) {
@@ -599,7 +556,6 @@ class _FgHome extends State<FgHome> {
                                   //  Navigator.push(context, new MaterialPageRoute(builder: (ctxt) => new SearchResultShowScreen(0,"Shop Name")));
                                 }
                               },
-
                               child: new Icon(
                                 Icons.search,
                                 color: Colors.black,
@@ -608,7 +564,8 @@ class _FgHome extends State<FgHome> {
                             hintStyle: TextStyle(
                                 fontSize: 17.0,
                                 color: Colors.black.withOpacity(0.5)),
-                            contentPadding: EdgeInsets.only(top: 0,bottom: 0,left: 10),
+                            contentPadding:
+                                EdgeInsets.only(top: 0, bottom: 0, left: 10),
                             border: InputBorder.none,
                             errorBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.white),
@@ -617,10 +574,11 @@ class _FgHome extends State<FgHome> {
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.white),
                               borderRadius: BorderRadius.circular(20.0),
-                            ), focusedErrorBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.white),
                               borderRadius: BorderRadius.circular(20.0),
@@ -635,14 +593,12 @@ class _FgHome extends State<FgHome> {
                   ),
                   isExpandedShopList
                       ? Container(
-                          height: 350,
                           margin: EdgeInsets.only(
-                            bottom: 100,
+                            bottom: 10,
                           ),
                           //left: 20, right: 20),
                           child: !_notifier.isShopSearchList
                               ? Container(
-                                  height: 50,
                                   child: SpinKitWave(
                                     color: Colors.white,
                                     size: 20,
@@ -651,6 +607,7 @@ class _FgHome extends State<FgHome> {
                               : Container(
                                   child: _notifier.shopSearchList.length == 0
                                       ? Container(
+                                          margin: EdgeInsets.only(top: 20),
                                           child: Center(
                                             child: Text(
                                               "Not Found",
@@ -673,12 +630,13 @@ class _FgHome extends State<FgHome> {
                                               imageUrl: _notifier
                                                   .shopSearchList[index]
                                                   .profileImage,
-                                              userId:_notifier
+                                              userId: _notifier
+                                                  .shopSearchList[index].id,
+                                              distance: _notifier
                                                   .shopSearchList[index]
-                                                  .id ,
+                                                  .distance,
                                               name: _notifier
-                                                  .shopSearchList[index]
-                                                  .name,
+                                                  .shopSearchList[index].name,
                                               time:
                                                   "${_notifier.shopSearchList[index].defaultOpening} - ${_notifier.shopSearchList[index].defaultClosing}",
                                             );

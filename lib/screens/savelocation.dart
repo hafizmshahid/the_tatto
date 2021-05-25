@@ -117,7 +117,7 @@ class _SaveLocation extends State<SaveLocation> {
                 Navigator.push(
                     context,
                     new MaterialPageRoute(
-                        builder: (ctxt) => new HomeScreen(0)));
+                        builder: (ctxt) => new HomeScreen(1)));
 
                 // do something
               },
