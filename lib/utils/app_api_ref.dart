@@ -7,3 +7,6 @@ const kStylesApi = "https://tattooarts.herokuapp.com/traditionalsearch";
 const kArtistSearchApi = "https://tattooarts.herokuapp.com/artistsearch/?search=";
 //const kSignInApi = "${baseUrlApi}login";
 const kSignUpApi = "https://tattooarts.herokuapp.com/auth/register/";
+const kForgetPasswordApi = "https://tattooarts.herokuapp.com/auth/request-reset-password-email/";
+const kGetAppointmentApi = "https://tattooarts.herokuapp.com/appointment/";
+const kGetAppointmentHistoryApi = "https://tattooarts.herokuapp.com/appointment/?history=true";

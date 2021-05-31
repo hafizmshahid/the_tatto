@@ -162,7 +162,9 @@ class TopServiceDataNew extends StatelessWidget {
                                     minWidth: screenwidth * .22,
                                     height: 30,
                                     onPressed: () {
+                                      _notifier.totalPrice =0;
                                       _notifier.getAboutDataList(userId);
+
                                       Navigator.push(
                                           context,
                                           new MaterialPageRoute(

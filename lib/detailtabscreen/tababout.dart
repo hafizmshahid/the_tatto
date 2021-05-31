@@ -79,7 +79,7 @@ class _TabAbout extends State<TabAbout> {
                       margin: EdgeInsets.only(left: 10, top: 10, right: 10),
                       alignment: Alignment.topLeft,
                       child: Text(
-                        "${_notifier.aboutDataList[0].about}",
+                        "${_notifier.aboutDataList[0].servicesDetail[0].servicesName}",
                         style: TextStyle(
                             color:kPrimaryTextColor,
                             fontWeight: FontWeight.w600,
@@ -398,7 +398,7 @@ class _TabAbout extends State<TabAbout> {
                                     // width: MediaQuery.of(context).size *widget ,
 
                                     child: Text(
-                                      "Vishwashanti marg, near green lnn fast food, pune",
+                                      "${_notifier.aboutDataList[0].shopArtistNameDetail.location}",
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
@@ -450,7 +450,7 @@ class _TabAbout extends State<TabAbout> {
                                               Container(
                                                 child: Container(
                                                   margin: EdgeInsets.only(top: 2,left:5),
-                                                  child: Text("0.05 km",
+                                                  child: Text("${_notifier.aboutDataList[0].shopArtistNameDetail.distance}",
                                                       style: TextStyle(color: kPrimaryTextColor,
                                                           fontSize: 12,
                                                           fontWeight: FontWeight.w600,fontFamily: 'Montserrat')),
@@ -510,7 +510,10 @@ class _TabAbout extends State<TabAbout> {
                                                   ),
                                                 ),
 
-                                                Container(
+                                                InkWell(
+                                                  onTap: (){
+                                                    launchURL(_notifier.aboutDataList[0].shopArtistNameDetail.latitude,_notifier.aboutDataList[0].shopArtistNameDetail.longitude);
+                                                  },
                                                   child: Container(
                                                     margin: EdgeInsets.only(top: 2,left:5),
                                                     child: Text("See the direction",
@@ -518,9 +521,6 @@ class _TabAbout extends State<TabAbout> {
                                                             fontSize: 12,
                                                             fontWeight: FontWeight.w600,fontFamily: 'Montserrat')),
                                                   ),
-
-
-
                                                 ),
 
 
@@ -756,6 +756,19 @@ class _TabAbout extends State<TabAbout> {
                 ) ,
               ))),
     );
+  }
+
+  launchURL(String lat,String lng) async {
+
+     final String googleMapslocationUrl = "https://www.google.com/maps/search/?api=1&query=$lat,$lng";
+    final String encodedURl = Uri.encodeFull(googleMapslocationUrl);
+
+    if (await canLaunch(encodedURl)) {
+      await launch(encodedURl);
+    } else {
+      print('Could not launch $encodedURl');
+      throw 'Could not launch $encodedURl';
+    }
   }
 }
 

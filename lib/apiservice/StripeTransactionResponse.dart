@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-//import 'package:stripe_payment/stripe_payment.dart';
-//import 'package:stripe_payment/stripe_payment.dart';
-//import 'package:stripe_payment/stripe_payment.dart';
+import 'package:stripe_payment/stripe_payment.dart';
+import 'package:stripe_payment/stripe_payment.dart';
+import 'package:stripe_payment/stripe_payment.dart';
 
 class StripeTransactionResponse {
   String message;
@@ -15,7 +15,7 @@ class StripeTransactionResponse {
   StripeTransactionResponse({this.message, this.success});
 }
 
-/*class StripeService {
+class StripeService {
   static String apiBase = 'https://api.stripe.com/v1';
   static String paymentApiUrl = '${StripeService.apiBase}/payment_intents';
   static String secret = 'sk_test_51IuxjAFk9pCiSvTWYpBnBvfQ5mpFMYBzyYnE3sKVIfsty2jHQ8Nu0SIROKa4S4aWRCrneUFhivhZD3s9EltaXM8w00BcWMNNFI';
@@ -101,4 +101,4 @@ class StripeTransactionResponse {
     }
     return null;
   }
-}*/
+}

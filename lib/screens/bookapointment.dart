@@ -1,31 +1,23 @@
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
+import 'package:stripe_payment/stripe_payment.dart';
 import 'package:the_tatto/apiservice/StripeTransactionResponse.dart';
 import 'package:the_tatto/appbar/searchresult.dart';
 import 'package:the_tatto/common/ZButtonRaised.dart';
 import 'package:the_tatto/common/common_view.dart';
-import 'package:the_tatto/detailtabscreen/website.dart';
-import 'package:the_tatto/model/offerdata.dart';
 import 'package:the_tatto/model/timedata.dart';
-import 'package:the_tatto/screens/homescreen.dart';
-import 'package:the_tatto/separator/separator.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
 import 'package:intl/intl.dart';
+import 'package:the_tatto/utils/app_sizes.dart';
 import 'package:the_tatto/viewmodel/auth_view_model.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'confirmbooking.dart';
 
-/*void main() {
-  runApp(new MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: new BookApointment(),
-  ));
-}*/
+
 
 class BookApointment extends StatefulWidget {
   @override
@@ -140,61 +132,88 @@ class _BookApointment extends State<BookApointment> {
     }
     return result;
   }
-
   CalendarCarousel _calendarCarousel, _calendarCarouselNoHeader;
   DateTime _currentDate = new DateTime.now();
   DateTime _currentDate2 = new DateTime.now();
   String _currentMonth = DateFormat.yMd().format(DateTime.now());
   DateTime _targetDateTime = DateTime.now();
-  _onTapImage(BuildContext context,String msg) {
+  ProgressDialog pr;
+  _onDialogBox(BuildContext context,String msg) {
     return showDialog(
         context: context,
-        builder: (_) => AlertDialog(
-          title: Text('Transaction Alert'),
+        builder: (context) => AlertDialog(
+          title: Center(child: Text('Transaction Alert')),
           content:Container(
             height: 200,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+            child:  Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("$msg",style: TextStyle(fontSize: 20),overflow:TextOverflow.ellipsis ,),
-                SizedBox(height: 30,),
+                Text("$msg",style: TextStyle(fontSize: 18),overflow:TextOverflow.ellipsis ,maxLines: 5,),
                 ZButtonRaised(
                   text: 'Done',
+                  color:Colors.blue ,
                   margin: EdgeInsets.symmetric(horizontal: 50),
-                  onTap: () => Navigator.pop(context),),
+                  onTap: ()  {
+                      Navigator.pop(context);
+
+                  },),
               ],
             ),
           ),
         ));
   }
+  payViaNewCard(BuildContext context,int price) async {
+    print("----------------$price---------------");
+
+    pr.show();
+    var response = await StripeService.payWithNewCard(amount: '$price', currency: 'EUR',context: context);
+    pr.hide();
+    _onDialogBox(context,response.message);
+
+  }
 
 //  List<DateTime> _markedDate = [DateTime(2018, 9, 20), DateTime(2018, 10, 11)];
 
   EventList<Event> _markedDateMap = new EventList<Event>();
-  //   payViaNewCard(BuildContext context,int price) async {
-  //     print("----------------$price---------------");
-  //   ProgressDialog dialog = new ProgressDialog(context);
-  //   dialog.style(message: 'Please wait...');
-  //   await dialog.show();
-  //   var response = await StripeService.payWithNewCard(amount: '$price', currency: 'EUR',context: context);
-  //   await dialog.hide();
-  //   Scaffold.of(context).showSnackBar(SnackBar(
-  //     content: Text(response.message),
-  //     duration:
-  //     new Duration(milliseconds: response.success == true ? 1200 : 3000),
-  //   ));
-  //   _onTapImage(context,response.message);
-  //
-  // }
+
   @override
   void initState() {
     // TODO: implement initState
-   // StripeService.init();
+   //StripeService.init();
+
+    StripePayment.setOptions(StripeOptions(
+      androidPayMode: 'test',
+      publishableKey: "pk_test_51IuxjAFk9pCiSvTW3kMRoOOybVHE9VZtN5WLBI35xgPn8qlboP3XvuO7Bexx4qRevxo4bxKDdHWGd3PFvLNadUYU00dBFgRpvV",
+    ));
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    pr = new ProgressDialog(context);
+    pr.style(
+      message: 'Please wait ....',
+      borderRadius: 5.0,
+      backgroundColor: Colors.black,
+      progressWidget:  SpinKitWave(
+        color: Colors.white,
+        size: AppSizes.appVerticalLg * 0.55,
+      ),
+      elevation: 10.0,
+      insetAnimCurve: Curves.easeInOut,
+      progress: 0.0,
+      maxProgress: 100.0,
+      progressTextStyle: TextStyle(
+          color: Colors.white,
+          fontSize: 14.0,
+          fontWeight: FontWeight.w600,
+          fontFamily: 'Montserrat'),
+      messageTextStyle: TextStyle(
+          color: Colors.white,
+          fontSize: 14.0,
+          fontWeight: FontWeight.w600,
+          fontFamily: 'Montserrat'),
+    );
     dynamic screenHeight = MediaQuery.of(context).size.height;
     dynamic screenwidth = MediaQuery.of(context).size.width;
 
@@ -560,18 +579,14 @@ class _BookApointment extends State<BookApointment> {
                                       child: FlatButton(
                                         onPressed: () {
                                           String date=DateFormat.yMd().format(_currentDate2);
-                                         _notifier.appointDateSelect="$date,${timedatalist[currentSelectedIndex]['time']}";
-                                          print("=---------------appointDateSelect:${_notifier.appointDateSelect}--------");
-                                          print("=---------------totalPrice:${_notifier.totalPrice}--------");
+                                         _notifier.appointDateSelect="${_currentDate2.year}-${_currentDate2.month}-${_currentDate2.day}T${timedatalist[currentSelectedIndex]['time']}";
+                                          print("---------------appointDateSelect:${_notifier.appointDateSelect}--------");
 
-                                        //  print("=----------------${_currentDate2}--------");
-
-                                        //  payViaNewCard(context,_notifier.totalPrice);
-                                          // Navigator.push(
-                                          //     context,
-                                          //     new MaterialPageRoute(
-                                          //         builder: (ctxt) =>
-                                          //             new ConfirmBooking()));
+                                          Navigator.push(
+                                              context,
+                                              new MaterialPageRoute(
+                                                  builder: (ctxt) =>
+                                                      new ConfirmBooking()));
                                         },
                                         color: Colors.blue,
                                         shape: RoundedRectangleBorder(

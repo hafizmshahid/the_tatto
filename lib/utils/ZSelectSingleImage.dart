@@ -22,6 +22,7 @@ class ZSelectSingleImage extends StatefulWidget {
   final double width;
   final EdgeInsets margin;
 
+
   ZSelectSingleImage({
     Key key,
     this.onImageChange,

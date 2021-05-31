@@ -21,13 +21,13 @@ class _GalleryView extends State<GalleryView> {
   @override
   Widget build(BuildContext context) {
     final _notifier = Provider.of<AuthViewModel>(context);
-    List aboutImageList = [
-      "${_notifier.aboutDataList[0].shopImageDetail.firstImage}",
-      "${_notifier.aboutDataList[0].shopImageDetail.secondImage}",
-      "${_notifier.aboutDataList[0].shopImageDetail.thirdImage}",
-      "${_notifier.aboutDataList[0].shopImageDetail.fourthImage}",
-      "${_notifier.aboutDataList[0].shopImageDetail.fifthImage}",
-    ];
+    // List aboutImageList = [
+    //   "${_notifier.aboutDataList[0].s}",
+    //   "${_notifier.aboutDataList[0].shopImageDetail.secondImage}",
+    //   "${_notifier.aboutDataList[0].shopImageDetail.thirdImage}",
+    //   "${_notifier.aboutDataList[0].shopImageDetail.fourthImage}",
+    //   "${_notifier.aboutDataList[0].shopImageDetail.fifthImage}",
+    // ];
     return Scaffold(
       body: Container(
           margin: EdgeInsets.only(top: 0,left: 10,right: 10,bottom: 45),
@@ -50,8 +50,16 @@ class _GalleryView extends State<GalleryView> {
           ),) ): StaggeredGridView.countBuilder(
             crossAxisCount: 4,
             itemCount: 5,
-            itemBuilder: (BuildContext context, int index) =>
-            new Container(
+            itemBuilder: (BuildContext context, int index) {
+              // List aboutImageList = [
+              //   "${_notifier.aboutDataList[0].imageDetail[index].shopImage.profileImage}",
+              //   "${_notifier.aboutDataList[0].shopImageDetail.secondImage}",
+              //   "${_notifier.aboutDataList[0].shopImageDetail.thirdImage}",
+              //   "${_notifier.aboutDataList[0].shopImageDetail.fourthImage}",
+              //   "${_notifier.aboutDataList[0].shopImageDetail.fifthImage}",
+              // ];
+
+            return Container(
                 padding: EdgeInsets.all(4),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10.0),
@@ -60,12 +68,13 @@ class _GalleryView extends State<GalleryView> {
                 child: new Container(
                   decoration: BoxDecoration(
                     image:DecorationImage(
-                      image: NetworkImage("$baseUrl${aboutImageList[index]}"),
+                    //  image: NetworkImage("$baseUrl${aboutImageList[index]}"),
+                      image: NetworkImage("dsfkl"),
                       fit: BoxFit.fill,
                     ) ,
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                )),
+                ));},
             staggeredTileBuilder: (int index) =>
             new StaggeredTile.count(2, index.isEven ? 2 : 1),
             mainAxisSpacing: 4.0,

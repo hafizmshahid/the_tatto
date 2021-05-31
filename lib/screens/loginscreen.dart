@@ -300,11 +300,10 @@ class _LoginScreen extends State<LoginScreen> {
                       //  color: const Color(0xFF18FF10),
                       color: kGreenColor,
                       onPressed: () async {
-                       _notifier. getProfile(1);
-                               Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                            builder: (context) => HomeScreen(0)));
+                            //    Navigator.push(
+                            // context,
+                            // MaterialPageRoute(
+                            // builder: (context) => HomeScreen(0)));
 
 
                         if(signInForm.currentState.validate()){
@@ -316,15 +315,15 @@ class _LoginScreen extends State<LoginScreen> {
                             builder: (context) => HomeScreen(0)));*/
                         showProcessBar(context);
                         await _notifier.validateAndSubmitSignIn();
-                        print("-----------------${_notifier.isSignIn}--------------");
+                       // print("-----------------${_notifier.isSignIn}--------------");
                         if (_notifier.isSignIn) {
                           Navigator.pop(context);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => HomeScreen(0)),
-                            // var savedValue = preferences.getString('value_key');
                           );
+                        //  print("-----------------${_notifier.isSignIn}--------------");
                          // _notifier.isSignIn = false;
                           // Fluttertoast.showToast(msg: "${_notifier.authMsg}", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.BOTTOM,);
                         }
@@ -397,11 +396,11 @@ class _LoginScreen extends State<LoginScreen> {
                           alignment: FractionalOffset.bottomCenter,
                           child: GestureDetector(
                             onTap: () {
-                            /*  Navigator.push(
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => RegisterScreen()),
-                              );*/
+                              );
                             },
                             child: new Row(
                               mainAxisAlignment: MainAxisAlignment.center,

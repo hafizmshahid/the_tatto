@@ -4,7 +4,7 @@ import 'package:the_tatto/viewmodel/auth_view_model.dart';
 
 
 class CustomCheckBox extends StatefulWidget {
- final int price;
+ final double price;
  final int index;
 
   const CustomCheckBox({Key key, this.price, this.index}) : super(key: key);
@@ -27,22 +27,10 @@ class _CustomCheckBox extends State<CustomCheckBox> {
   @override
   Widget build(BuildContext context) {
     final _notifier = Provider.of<AuthViewModel>(context);
-    List<int> aboutStyleID = [
-      _notifier.aboutDataList[0].firstServicesDetail.id,
-      _notifier.aboutDataList[0].secondServicesDetail.id,
-      _notifier.aboutDataList[0].thirdServicesDetail.id,
-      _notifier.aboutDataList[0].fourServicesDetail.id,
-      _notifier.aboutDataList[0].fiveServicesDetail.id,
-    ];
-    List aboutStyleName = [
-      {
-        "first_services": _notifier.aboutDataList[0].firstServicesDetail.id },{
-        "second_services": _notifier.aboutDataList[0].secondServicesDetail.id,},{
-        "third_services": _notifier.aboutDataList[0].thirdServicesDetail.id,},{
-        "four_services": _notifier.aboutDataList[0].fourServicesDetail.id,},{
-        "five_services": _notifier.aboutDataList[0].fiveServicesDetail.id,},{
-      },
-    ];
+
+    final List<Map<String, dynamic >>serviceTime = [];
+    List<int> _selectedItems = List<int>();
+    List<int> selectedIndex=[];
 
 
 
@@ -59,25 +47,32 @@ class _CustomCheckBox extends State<CustomCheckBox> {
           onTap: () {
             setState(() {
               _value = !_value;
-              print("--------------price ${widget.price}-----------");
-              if(_value){
-               // _notifier.totalPrice +=widget.price;
-                _notifier.priceAdd(widget.price);
 
-              print("--------------totalPrice ${_notifier.totalPrice}-----------");
-              print("--------------aboutStylePrice ${aboutStyleID[widget.index]}-----------");
-              print("--------------aboutStyleTitle---- ${_notifier.aboutStyleTitle[widget.index]}:${aboutStyleID[widget.index]}-----------");
-                _notifier.aboutSelectServices .add("${_notifier.aboutStyleTitle[widget.index]}:${aboutStyleID[widget.index]}");
+              if(_value){
+                if(_selectedItems.contains(widget.index)){
+                  setState(() {
+                    _selectedItems.removeWhere((val) => val == widget.index);
+                  });
+                }
+                 _notifier.priceAdd(widget.price);
+
+
+                print("--------------${widget.index}--------------");
+                selectedIndex.add(widget.index);
 
               }
               else{
-               // _notifier.totalPrice -= widget.price;
-                _notifier. priceSub(widget.price);
-                print("--------------totalPrice ${_notifier.totalPrice}-----------");
-               // if(_notifier.totalPrice >0){
+                if(! _selectedItems.contains(widget.index)){
+                  setState(() {
+                    _selectedItems.add(widget.index);
+                  });
+                }
 
 
-               // }
+
+                 _notifier. priceSub(widget.price);
+
+
 
               }
             });

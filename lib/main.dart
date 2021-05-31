@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'package:provider/provider.dart';
+import 'package:the_tatto/screens/homescreen.dart';
 import 'package:the_tatto/screens/loginscreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_tatto/constant/appconstant.dart';
 import 'package:flutter/material.dart';
+import 'package:the_tatto/utils/app_constant.dart';
+import 'package:the_tatto/utils/app_sizes.dart';
 import 'package:the_tatto/viewmodel/auth_view_model.dart';
 import 'constant/preferenceutils.dart';
 import 'fcm.dart';
@@ -23,7 +26,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       color: Colors.black,
-      home: new SplashScreen(),
+      home: StatUpLogic(),
       routes: <String, WidgetBuilder>{
         '/HomeScreen': (BuildContext context) => new LoginScreen()
       },
@@ -163,5 +166,28 @@ class _SplashScreenState extends State<SplashScreen> {
     preferences.setString('fcmtoken', token);// Retrieve value later*/
 
 
+  }
+}
+
+class StatUpLogic extends StatelessWidget {
+  const StatUpLogic({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    AppSizes().init(context);
+    return FutureBuilder<SharedPreferences>(
+      future: SharedPreferences.getInstance(),
+      builder: (_, prefs) {
+        if (prefs.hasData) {
+          if (prefs.data.getString(kLoginAccessToken) != null) {
+            return HomeScreen(0);
+            // return MyProfilePage();
+          } else {
+            return SplashScreen();
+          }
+        }
+        return Material(child: Center(child: CircularProgressIndicator()));
+      },
+    );
   }
 }

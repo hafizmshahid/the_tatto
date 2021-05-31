@@ -20,7 +20,7 @@ class PreferenceUtils {
     return prefs?.setString(key, value) ?? Future.value(false);
   }
 
-  static String getInt(String key, [String defValue]) {
+  static int getInt(String key, [String defValue]) {
     return _prefsInstance.getInt(key) ?? defValue ??  0 ;
   }
 

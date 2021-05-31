@@ -6,12 +6,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
+import 'package:the_tatto/common/ZButtonRaised.dart';
 import 'package:the_tatto/utils/app_color.dart';
 import 'package:the_tatto/utils/app_sizes.dart';
 import 'package:the_tatto/viewmodel/auth_view_model.dart';
 
 
+import 'loginscreen.dart';
 import 'otpscreen.dart';
 
 /*void main() {
@@ -27,22 +30,67 @@ class ForgotPassword extends StatefulWidget {
 }
 
 class _ForgotPassword extends State<ForgotPassword> {
-
-
-
-
-  final _formKey = GlobalKey<FormState>();
-
-
+  ProgressDialog pr;
   FocusNode _emailFocusNode = FocusNode();
-  String _username,_email,_password= "";
   GlobalKey<FormState> forgetForm = GlobalKey<FormState>();
+  _onTapImage(BuildContext context,String msg) {
+    return showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text('Alert'),
+          content:Container(
+            height: 200,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("$msg",style: TextStyle(fontSize: 18),overflow:TextOverflow.ellipsis ,maxLines: 5,),
+                ZButtonRaised(
+                  text: 'Done',
+                  color:kGreenColor ,
+                  margin: EdgeInsets.symmetric(horizontal: 50),
+                  onTap: ()  {
+                    //  Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => LoginScreen()),
+                    );
 
-
+                  },),
+              ],
+            ),
+          ),
+        ));
+  }
 
   @override
   Widget build(BuildContext context) {
     final _notifier = Provider.of<AuthViewModel>(context);
+
+    pr = new ProgressDialog(context);
+    pr.style(
+      message: 'Updating ....',
+      borderRadius: 5.0,
+      backgroundColor: Colors.black,
+      progressWidget:  SpinKitWave(
+        color: Colors.white,
+        size: AppSizes.appVerticalLg * 0.55,
+      ),
+      elevation: 10.0,
+      insetAnimCurve: Curves.easeInOut,
+      progress: 0.0,
+      maxProgress: 100.0,
+      progressTextStyle: TextStyle(
+          color: Colors.white,
+          fontSize: 14.0,
+          fontWeight: FontWeight.w600,
+          fontFamily: 'Montserrat'),
+      messageTextStyle: TextStyle(
+          color: Colors.white,
+          fontSize: 14.0,
+          fontWeight: FontWeight.w600,
+          fontFamily: 'Montserrat'),
+    );
     AppSizes().init(context);
     return  SafeArea(
       child:
@@ -54,7 +102,6 @@ class _ForgotPassword extends State<ForgotPassword> {
             child:Scaffold(
                 resizeToAvoidBottomInset: true,
                 backgroundColor: Colors.transparent,
-
                 appBar: AppBar(
                   leading: IconButton(
                     icon: Icon(Icons.keyboard_arrow_left, color: kPrimaryTextColor,size: 30,),
@@ -66,8 +113,6 @@ class _ForgotPassword extends State<ForgotPassword> {
                   backgroundColor: Colors.transparent,
                   elevation: 0.0,
                 ),
-
-
                 body:Form(
                     key: forgetForm,
                     child: Container(
@@ -75,7 +120,6 @@ class _ForgotPassword extends State<ForgotPassword> {
                           Expanded(
                             child: ListView(
                               children: [
-
                                 Container(
                                   margin: const EdgeInsets.only(top: 50.0, left: 0.0),
                                   alignment: FractionalOffset.center,
@@ -130,18 +174,11 @@ class _ForgotPassword extends State<ForgotPassword> {
                                   child: TextFormField(
                                     keyboardType: TextInputType.emailAddress,
                                     autofocus: false,
-
-
-
                                     focusNode: _emailFocusNode,
                                     validator: (email)=>EmailValidator.validate(email)? null:"Invalid email address",
                                     onSaved:  (value) => _notifier.forgetEmail = value,
-                                    onFieldSubmitted: (_){
-                                    },
-
-
-
-                                    style: TextStyle(fontSize: 14.0, color: Colors.black,fontWeight: FontWeight.w600,fontFamily: 'Montserrat'),
+                                    onFieldSubmitted: (_){},
+                                    style: TextStyle(fontSize: 14.0, color: Colors.white,fontWeight: FontWeight.w600,fontFamily: 'Montserrat'),
                                     decoration: InputDecoration(
                                       filled: true,
                                       fillColor:  Colors.transparent.withOpacity(0.50),
@@ -177,21 +214,18 @@ class _ForgotPassword extends State<ForgotPassword> {
                                       color: kGreenColor ,
                                       onPressed: () async {
                                         if(forgetForm.currentState.validate()){
+                                          forgetForm.currentState.save();
+                                          pr.show();
 
-                                        showProcessBar(context);
-                                        await _notifier.validateAndSubmitForget();
+                                          await _notifier.validateAndSubmitForget();
+                                       // showProcessBar(context);
                                         if (_notifier.isForget) {
-                                          Navigator.pop(context);
-                                          // Navigator.pushNamed(context, DogsBuyMeetSlider.id);
-
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(builder: (context) => OtpScreen()),
-                                          );
-                                          _notifier.isForget = false;
-                                          // Fluttertoast.showToast(msg: "${_notifier.authMsg}", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.BOTTOM,);
+                                          pr.hide();
+                                          _onTapImage(context,_notifier.authMsg);
+                                         // Navigator.push(context, MaterialPageRoute(builder: (context) => OtpScreen()),);
                                         } else {
                                           Navigator.pop(context);
+                                          pr.hide();
                                           print("----------------not ok------------------");
                                           Fluttertoast.showToast(
                                             msg: "${_notifier.authMsg}",
@@ -213,7 +247,7 @@ class _ForgotPassword extends State<ForgotPassword> {
 
                                       }},
                                       child: Text(
-                                        "Send me OTP",
+                                        "Send",
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           color: Colors.white,

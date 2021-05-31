@@ -65,9 +65,8 @@ dependencies:
   permission_handler:
   image_picker:
   flutter_icons:
-  #stripe_payment:
-
-
+  stripe_payment:
+  flutter_google_places:
 
 
 

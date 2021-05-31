@@ -1,4 +1,9 @@
+import 'package:progress_dialog/progress_dialog.dart';
+import 'package:provider/provider.dart';
+import 'package:stripe_payment/stripe_payment.dart';
+import 'package:the_tatto/apiservice/StripeTransactionResponse.dart';
 import 'package:the_tatto/appbar/searchresult.dart';
+import 'package:the_tatto/common/ZButtonRaised.dart';
 import 'package:the_tatto/common/common_view.dart';
 import 'package:the_tatto/detailtabscreen/website.dart';
 import 'package:the_tatto/drawerscreen/top_offers.dart';
@@ -15,6 +20,8 @@ import 'package:flutter/painting.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
 import 'package:intl/intl.dart';
+import 'package:the_tatto/utils/app_color.dart';
+import 'package:the_tatto/viewmodel/auth_view_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /*void main() {
@@ -86,6 +93,40 @@ class _ConfirmBooking extends State<ConfirmBooking> {
       viewVisible = false;
     });
   }
+  ProgressDialog pr;
+  _onDialogBox(BuildContext context,String msg) {
+    return showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Center(child: Text('Transaction Alert')),
+          content:Container(
+            height: 200,
+            child:  Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("$msg",style: TextStyle(fontSize: 18),overflow:TextOverflow.ellipsis ,maxLines: 5,),
+                ZButtonRaised(
+                  text: 'Done',
+                  color:Colors.blue ,
+                  margin: EdgeInsets.symmetric(horizontal: 50),
+                  onTap: ()  {
+                    Navigator.pop(context);
+
+                  },),
+              ],
+            ),
+          ),
+        ));
+  }
+  payViaNewCard(BuildContext context,double price) async {
+    print("----------------$price---------------");
+
+    pr.show();
+    var response = await StripeService.payWithNewCard(amount: '$price', currency: 'EUR',context: context);
+    pr.hide();
+    _onDialogBox(context,response.message);
+
+  }
 
   List<T> map<T>(List list, Function handler) {
     List<T> result = [];
@@ -106,9 +147,23 @@ class _ConfirmBooking extends State<ConfirmBooking> {
   EventList<Event> _markedDateMap = new EventList<Event>();
 
   @override
+  void initState() {
+    // TODO: implement initState
+   // StripeService.init();
+
+    StripePayment.setOptions(StripeOptions(
+      androidPayMode: 'test',
+      publishableKey: "pk_test_51IuxjAFk9pCiSvTW3kMRoOOybVHE9VZtN5WLBI35xgPn8qlboP3XvuO7Bexx4qRevxo4bxKDdHWGd3PFvLNadUYU00dBFgRpvV",
+    ));
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    pr = new ProgressDialog(context);
     dynamic screenHeight = MediaQuery.of(context).size.height;
     dynamic screenwidth = MediaQuery.of(context).size.width;
+    final _notifier = Provider.of<AuthViewModel>(context);
 
     // TODO: implement build
     return new SafeArea(
@@ -178,6 +233,7 @@ class _ConfirmBooking extends State<ConfirmBooking> {
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
                     children: <Widget>[
                       Expanded(
                         child: new ListView(
@@ -242,8 +298,8 @@ class _ConfirmBooking extends State<ConfirmBooking> {
                                                           BorderRadius.circular(
                                                               10.0),
                                                       image: DecorationImage(
-                                                        image: AssetImage(
-                                                            "images/the_barber.jpg"),
+                                                        image: NetworkImage(
+                                                            "${_notifier.aboutDataList[0].shopArtistNameDetail.profileImage}"),
                                                         fit: BoxFit.fitWidth,
                                                         alignment:
                                                             Alignment.topCenter,
@@ -270,7 +326,7 @@ class _ConfirmBooking extends State<ConfirmBooking> {
                                                                 EdgeInsets.only(
                                                                     top: 25.0),
                                                             child: Text(
-                                                              "Barberque",
+                                                              "${_notifier.aboutDataList[0].shopArtistNameDetail.name}",
                                                               style: TextStyle(
                                                                   color: Colors
                                                                       .black,
@@ -290,7 +346,7 @@ class _ConfirmBooking extends State<ConfirmBooking> {
                                                                     top: 5.0,
                                                                     left: 0.0),
                                                             child: Text(
-                                                              "vishwashanti marg, near lnn, pune ",
+                                                              "${_notifier.aboutDataList[0].shopArtistNameDetail.location}",
                                                               overflow:
                                                                   TextOverflow
                                                                       .ellipsis,
@@ -404,7 +460,7 @@ class _ConfirmBooking extends State<ConfirmBooking> {
                                                                         ),
                                                                         TextSpan(
                                                                             text:
-                                                                                "06:00 pm - June 21,2020",
+                                                                                "${_notifier.appointDateSelect}",
                                                                             style: TextStyle(
                                                                                 color: Colors.grey,
                                                                                 fontSize: 11,
@@ -496,181 +552,222 @@ class _ConfirmBooking extends State<ConfirmBooking> {
                                   dottedLength: 10.0,
                                   space: 1.0,
                                 )),
-
                             Container(
-                                alignment: Alignment.center,
-                                margin: EdgeInsets.only(top: 20),
-                                child: FDottedLine(
-                                  color: Color(0xFF5eb58f),
-                                  strokeWidth: 2.0,
-                                  dottedLength: 8.0,
-                                  space: 3.0,
-                                  corner: FDottedLineCorner.all(6.0),
-
-                                  /// add widget
-                                  child: Container(
-                                    color: Color(0xFF80dcb4),
-                                    width: screenwidth * .8,
-                                    height: 30,
-                                    alignment: Alignment.center,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Container(
-                                          margin: EdgeInsets.only(left: 15),
-                                          child: Text(
-                                            'You have a coupon to use',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 14,
-                                                fontFamily: 'Montserrat'),
-                                          ),
-                                        ),
-                                        GestureDetector(
-                                          onTap: () {
-                                            Navigator.push(
-                                                context,
-                                                new MaterialPageRoute(
-                                                    builder: (ctxt) =>
-                                                        new TopOffers()));
-                                          },
-                                          child: Container(
-                                            margin: EdgeInsets.only(right: 10),
-                                            child: Text(
-                                              'Click here',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 14,
-                                                  fontFamily: 'Montserrat'),
-                                            ),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                )),
-
+                                width: double.infinity,
+                                child: Center(child: Text("${_notifier.appointDateSelect}"))),
+                            SizedBox(height: 20,),
                             Container(
-                              margin: EdgeInsets.only(
-                                top: 20.0,
-                                bottom: 00.0,
-                                left: 30.0,
-                                right: 0.0,
-                              ),
-                              color: Colors.white,
-                              child: Text(
-                                "Select Payment Method",
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontFamily: 'Montserrat',
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 16),
-                              ),
-                            ),
-
-                            Container(
-                              height: 40,
-                              margin: EdgeInsets.only(
-                                top: 20.0,
-                                bottom: 00.0,
-                                left: 30.0,
-                                right: 0.0,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.only(left: 15),
-                                    child: Image.asset(
-                                      "images/paypal.png",
-                                      width: 60,
-                                      height: 40,
-                                    ),
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.only(right: 10),
-                                    child: Radio(
-                                      value: 0,
-                                      groupValue: _radioValue,
-                                      onChanged: _handleRadioValueChange,
-                                      activeColor: Color(0xFFe06287),
-
-                                      // selected: false,
-                                    ),
-                                  ),
-                                ],
+                              child: Center(
+                                child: Text(
+                                  'Your Total Payment',
+                                  style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: 'Montserrat'),
+                                ),
                               ),
                             ),
                             Container(
-                              height: 40,
-                              margin: EdgeInsets.only(
-                                top: 0.0,
-                                bottom: 00.0,
-                                left: 30.0,
-                                right: 0.0,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.only(left: 15),
-                                    child: Image.asset(
-                                      "images/rozarpay.png",
-                                      width: 60,
-                                      height: 40,
-                                    ),
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.only(right: 10),
-                                    child: Radio(
-                                      value: 1,
-                                      groupValue: _radioValue,
-                                      onChanged: _handleRadioValueChange,
-                                      activeColor: Color(0xFFe06287),
-                                      // selected: false,
-                                    ),
-                                  ),
-                                ],
+                              margin:
+                              EdgeInsets.only(top: 5, left: 10),
+                              child: Center(
+                                child: Text(
+                                  '${_notifier.totalPrice} \u0024',
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: 'Montserrat'),
+                                ),
                               ),
                             ),
-                            Container(
-                              height: 40,
-                              margin: EdgeInsets.only(
-                                top: 0.0,
-                                bottom: 00.0,
-                                left: 30.0,
-                                right: 0.0,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.only(left: 15),
-                                    child: Image.asset(
-                                      "images/stripe.png",
-                                      width: 50,
-                                      height: 30,
-                                    ),
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.only(right: 10),
-                                    child: Radio(
-                                      value: 2,
-                                      groupValue: _radioValue,
-                                      onChanged: _handleRadioValueChange,
-                                      activeColor: Color(0xFFe06287),
-                                      // selected: false,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            SizedBox(height: 20,),
+                            ZButtonRaised(
+                              text: 'Confirm',
+                              color:kGreenColor ,
+                              margin: EdgeInsets.symmetric(horizontal: 50),
+                              onTap: ()  {
+                                //  Navigator.pop(context);
+
+                                payViaNewCard(context,_notifier.totalPrice);
+                              print("-----------------asdf---------------");
+
+                              },),
+
+                            // Container(
+                            //     alignment: Alignment.center,
+                            //     margin: EdgeInsets.only(top: 20),
+                            //     child: FDottedLine(
+                            //       color: Color(0xFF5eb58f),
+                            //       strokeWidth: 2.0,
+                            //       dottedLength: 8.0,
+                            //       space: 3.0,
+                            //       corner: FDottedLineCorner.all(6.0),
+                            //
+                            //       /// add widget
+                            //       child: Container(
+                            //         color: Color(0xFF80dcb4),
+                            //         width: screenwidth * .8,
+                            //         height: 30,
+                            //         alignment: Alignment.center,
+                            //         child: Row(
+                            //           mainAxisAlignment:
+                            //               MainAxisAlignment.spaceBetween,
+                            //           children: [
+                            //             Container(
+                            //               margin: EdgeInsets.only(left: 15),
+                            //               child: Text(
+                            //                 'You have a coupon to use',
+                            //                 style: TextStyle(
+                            //                     color: Colors.white,
+                            //                     fontWeight: FontWeight.w600,
+                            //                     fontSize: 14,
+                            //                     fontFamily: 'Montserrat'),
+                            //               ),
+                            //             ),
+                            //             GestureDetector(
+                            //               onTap: () {
+                            //                 Navigator.push(
+                            //                     context,
+                            //                     new MaterialPageRoute(
+                            //                         builder: (ctxt) =>
+                            //                             new TopOffers()));
+                            //               },
+                            //               child: Container(
+                            //                 margin: EdgeInsets.only(right: 10),
+                            //                 child: Text(
+                            //                   'Click here',
+                            //                   style: TextStyle(
+                            //                       color: Colors.white,
+                            //                       fontWeight: FontWeight.w600,
+                            //                       fontSize: 14,
+                            //                       fontFamily: 'Montserrat'),
+                            //                 ),
+                            //               ),
+                            //             )
+                            //           ],
+                            //         ),
+                            //       ),
+                            //     )),
+
+                            // Container(
+                            //   margin: EdgeInsets.only(
+                            //     top: 20.0,
+                            //     bottom: 00.0,
+                            //     left: 30.0,
+                            //     right: 0.0,
+                            //   ),
+                            //   color: Colors.white,
+                            //   child: Text(
+                            //     "Select Payment Method",
+                            //     style: TextStyle(
+                            //         color: Colors.black,
+                            //         fontFamily: 'Montserrat',
+                            //         fontWeight: FontWeight.w600,
+                            //         fontSize: 16),
+                            //   ),
+                            // ),
+                            // Container(
+                            //   height: 40,
+                            //   margin: EdgeInsets.only(
+                            //     top: 20.0,
+                            //     bottom: 00.0,
+                            //     left: 30.0,
+                            //     right: 0.0,
+                            //   ),
+                            //   child: Row(
+                            //     mainAxisAlignment:
+                            //         MainAxisAlignment.spaceBetween,
+                            //     children: [
+                            //       Container(
+                            //         margin: EdgeInsets.only(left: 15),
+                            //         child: Image.asset(
+                            //           "images/paypal.png",
+                            //           width: 60,
+                            //           height: 40,
+                            //         ),
+                            //       ),
+                            //       Container(
+                            //         margin: EdgeInsets.only(right: 10),
+                            //         child: Radio(
+                            //           value: 0,
+                            //           groupValue: _radioValue,
+                            //           onChanged: _handleRadioValueChange,
+                            //           activeColor: Color(0xFFe06287),
+                            //
+                            //           // selected: false,
+                            //         ),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // ),
+                            // Container(
+                            //   height: 40,
+                            //   margin: EdgeInsets.only(
+                            //     top: 0.0,
+                            //     bottom: 00.0,
+                            //     left: 30.0,
+                            //     right: 0.0,
+                            //   ),
+                            //   child: Row(
+                            //     mainAxisAlignment:
+                            //         MainAxisAlignment.spaceBetween,
+                            //     children: [
+                            //       Container(
+                            //         margin: EdgeInsets.only(left: 15),
+                            //         child: Image.asset(
+                            //           "images/rozarpay.png",
+                            //           width: 60,
+                            //           height: 40,
+                            //         ),
+                            //       ),
+                            //       Container(
+                            //         margin: EdgeInsets.only(right: 10),
+                            //         child: Radio(
+                            //           value: 1,
+                            //           groupValue: _radioValue,
+                            //           onChanged: _handleRadioValueChange,
+                            //           activeColor: Color(0xFFe06287),
+                            //           // selected: false,
+                            //         ),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // ),
+                            // Container(
+                            //   height: 40,
+                            //   margin: EdgeInsets.only(
+                            //     top: 0.0,
+                            //     bottom: 00.0,
+                            //     left: 30.0,
+                            //     right: 0.0,
+                            //   ),
+                            //   child: Row(
+                            //     mainAxisAlignment:
+                            //         MainAxisAlignment.spaceBetween,
+                            //     children: [
+                            //       Container(
+                            //         margin: EdgeInsets.only(left: 15),
+                            //         child: Image.asset(
+                            //           "images/stripe.png",
+                            //           width: 50,
+                            //           height: 30,
+                            //         ),
+                            //       ),
+                            //       Container(
+                            //         margin: EdgeInsets.only(right: 10),
+                            //         child: Radio(
+                            //           value: 2,
+                            //           groupValue: _radioValue,
+                            //           onChanged: _handleRadioValueChange,
+                            //           activeColor: Color(0xFFe06287),
+                            //           // selected: false,
+                            //         ),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // ),
 
                             //   ],
                             // ),
@@ -770,16 +867,11 @@ class _ConfirmBooking extends State<ConfirmBooking> {
                       ),
 
                       GestureDetector(
-
                         onTap: (){
-
                        _radioValue = -1;
                        Navigator.push(context,
-                           new MaterialPageRoute(builder: (ctxt) => new Appoinment()));
-
+                           new MaterialPageRoute(builder: (ctxt) => new HomeScreen(1)));
                         },
-
-
                         child:  Align(
                           alignment: Alignment.center,
 

@@ -1,4 +1,5 @@
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:the_tatto/common/customcheckbox.dart';
 import 'package:the_tatto/common/customwidget.dart';
@@ -49,33 +50,60 @@ class _ServiceTab extends State<ServiceTab> {
   Widget build(BuildContext context) {
 
 
+
     dynamic screenHeight = MediaQuery.of(context).size.height;
     dynamic screenwidth = MediaQuery.of(context).size.width;
     final _notifier = Provider.of<AuthViewModel>(context);
-
-
+    // List aboutStyleName  = [
+    //   "${_notifier.aboutDataList[0].servicesDetail[0].firstServices.servicesName}",
+    //   "${_notifier.aboutDataList[0].servicesDetail[1].secondServices.servicesName}",
+    //   "${_notifier.aboutDataList[0].servicesDetail[2].thirdServices.servicesName}",
+    //   "${_notifier.aboutDataList[0].servicesDetail[3].fourServices.servicesName}",
+    //   "${_notifier.aboutDataList[0].servicesDetail[4].fiveServices.servicesName}",
+    // ];
+    // List aboutStylePrice  = [
+    //   _notifier.aboutDataList[0].servicesDetail[0].firstServices.servicesPrice,
+    //   _notifier.aboutDataList[0].servicesDetail[1].secondServices.servicesPrice,
+    //   _notifier.aboutDataList[0].servicesDetail[2].thirdServices.servicesPrice,
+    //  _notifier.aboutDataList[0].servicesDetail[3].fourServices.servicesPrice,
+    // _notifier.aboutDataList[0].servicesDetail[4].fiveServices.servicesPrice
+    // ];
+    // List aboutStylePics  = [
+    //   "${_notifier.aboutDataList[0].servicesDetail[0].firstServices.servicesImage}",
+    //   "${_notifier.aboutDataList[0].servicesDetail[1].secondServices.servicesImage}",
+    //   "${_notifier.aboutDataList[0].servicesDetail[2].thirdServices.servicesImage}",
+    //   "${_notifier.aboutDataList[0].servicesDetail[3].fourServices.servicesImage}",
+    //   "${_notifier.aboutDataList[0].servicesDetail[4].fiveServices.servicesImage}",
+    // ];
     String baseUrl="https://tattooarts.herokuapp.com";
-    List aboutStyleName = [
-      "${_notifier.aboutDataList[0].firstServicesDetail.servicesName}",
-      "${_notifier.aboutDataList[0].secondServicesDetail.servicesName}",
-      "${_notifier.aboutDataList[0].thirdServicesDetail.servicesName}",
-      "${_notifier.aboutDataList[0].fourServicesDetail.servicesName}",
-      "${_notifier.aboutDataList[0].fiveServicesDetail.servicesName}",
-    ];
-    List aboutStyleImageURl = [
-      "$baseUrl${_notifier.aboutDataList[0].firstServicesDetail.servicesImage}",
-      "$baseUrl${_notifier.aboutDataList[0].secondServicesDetail.servicesImage}",
-      "$baseUrl${_notifier.aboutDataList[0].thirdServicesDetail.servicesImage}",
-      "$baseUrl${_notifier.aboutDataList[0].fourServicesDetail.servicesImage}",
-      "$baseUrl${_notifier.aboutDataList[0].fiveServicesDetail.servicesImage}",
-    ];
-    List<int> aboutStylePrice = [
-      _notifier.aboutDataList[0].firstServicesDetail.servicesPrice,
-      _notifier.aboutDataList[0].secondServicesDetail.servicesPrice,
-      _notifier.aboutDataList[0].thirdServicesDetail.servicesPrice,
-      _notifier.aboutDataList[0].fourServicesDetail.servicesPrice,
-      _notifier.aboutDataList[0].fiveServicesDetail.servicesPrice,
-    ];
+    // List aboutStyleName = [
+    //   "${_notifier.aboutDataList[0].styleDetail[0].firstStyle.styleName}",
+    //   "${_notifier.aboutDataList[0].styleDetail[1].secondStyle.styleName}",
+    //   "${_notifier.aboutDataList[0].styleDetail[2].thirdStyle.styleName}",
+    //   "${_notifier.aboutDataList[0].styleDetail[3].fourStyle.styleName}",
+    //   "${_notifier.aboutDataList[0].styleDetail[4].fiveStyle.styleName}",
+    // ];
+    // List aboutStyleName = [
+    //   "${_notifier.aboutDataList[0].firstServicesDetail.servicesName}",
+    //   "${_notifier.aboutDataList[0].secondServicesDetail.servicesName}",
+    //   "${_notifier.aboutDataList[0].thirdServicesDetail.servicesName}",
+    //   "${_notifier.aboutDataList[0].fourServicesDetail.servicesName}",
+    //   "${_notifier.aboutDataList[0].fiveServicesDetail.servicesName}",
+    // ];
+    // List aboutStyleImageURl = [
+    //   "$baseUrl${_notifier.aboutDataList[0].firstServicesDetail.servicesImage}",
+    //   "$baseUrl${_notifier.aboutDataList[0].secondServicesDetail.servicesImage}",
+    //   "$baseUrl${_notifier.aboutDataList[0].thirdServicesDetail.servicesImage}",
+    //   "$baseUrl${_notifier.aboutDataList[0].fourServicesDetail.servicesImage}",
+    //   "$baseUrl${_notifier.aboutDataList[0].fiveServicesDetail.servicesImage}",
+    // ];
+    // List<int> aboutStylePrice = [
+    //   _notifier.aboutDataList[0].firstServicesDetail.servicesPrice,
+    //   _notifier.aboutDataList[0].secondServicesDetail.servicesPrice,
+    //   _notifier.aboutDataList[0].thirdServicesDetail.servicesPrice,
+    //   _notifier.aboutDataList[0].fourServicesDetail.servicesPrice,
+    //   _notifier.aboutDataList[0].fiveServicesDetail.servicesPrice,
+    // ];
     return SafeArea(
       child: Scaffold(
         body: new Container(
@@ -113,6 +141,9 @@ class _ServiceTab extends State<ServiceTab> {
                                                 physics: NeverScrollableScrollPhysics(),
                                                 itemBuilder: (BuildContext context, int index) {
 
+
+
+
                                                   return InkWell(
                                                     onTap: (){
                                                       // if(_notifier.valueCheckBox){
@@ -133,7 +164,7 @@ class _ServiceTab extends State<ServiceTab> {
                                                           color: Colors.white,
 
                                                          // child: CustomCheckBox(check:_value),
-                                                          child: CustomCheckBox(price: aboutStylePrice[index],index: index,),
+                                                          child: CustomCheckBox(price: _notifier.aboutDataList[0].servicesDetail[index].servicesPrice,index: index,),
                                                         ),
                                                         new Container(
                                                           margin: EdgeInsets.only(left: 10, top: 5),
@@ -145,7 +176,7 @@ class _ServiceTab extends State<ServiceTab> {
                                                           decoration: BoxDecoration(
                                                             borderRadius: BorderRadius.circular(10.0),
                                                             image: DecorationImage(
-                                                              image: NetworkImage(aboutStyleImageURl[index]),
+                                                              image: NetworkImage("$baseUrl${_notifier.aboutDataList[0].servicesDetail[index].servicesImage}"),
                                                               fit: BoxFit.fill,
                                                               alignment: Alignment.topCenter,
                                                             ),
@@ -172,7 +203,8 @@ class _ServiceTab extends State<ServiceTab> {
                                                                     children: [
                                                                       Container(
                                                                         child: Text(
-                                                                          '${aboutStyleName[index]}',
+                                                                         '${_notifier.aboutDataList[0].servicesDetail[index].servicesName}',
+
                                                                           style: TextStyle(
                                                                               color: Colors.black,
                                                                               fontWeight: FontWeight.w600,
@@ -182,7 +214,7 @@ class _ServiceTab extends State<ServiceTab> {
                                                                       ),
                                                                       Container(
                                                                         child: Text(
-                                                                          '${aboutStylePrice[index]}',
+                                                                           '${_notifier.aboutDataList[0].servicesDetail[index].servicesPrice}',
                                                                           style: TextStyle(
                                                                               color: const Color(0xFF999999),
                                                                               fontWeight: FontWeight.w600,
@@ -262,9 +294,20 @@ class _ServiceTab extends State<ServiceTab> {
                               alignment: FractionalOffset.center,
                                 child:   FlatButton(
                                   onPressed: () {
-                                    Navigator.push(context,
-                                        new MaterialPageRoute(builder: (ctxt) => new BookApointment()));
-                                  },
+                                    if(_notifier.totalPrice ==0){
+                                      Fluttertoast.showToast(
+                                        msg: "Please Select the Service",
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.BOTTOM,
+                                      );
+
+
+                                  }else{
+                                      Navigator.push(context,
+                                          new MaterialPageRoute(builder: (ctxt) => new BookApointment()));
+                                    }
+
+                                    },
                                   color: Colors.white,
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8)),

@@ -1,10 +1,14 @@
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_tatto/appbar/searchresult.dart';
 import 'package:flutter/material.dart';
 import 'package:the_tatto/fragments/appoinment.dart';
 import 'package:the_tatto/screens/homescreen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:the_tatto/screens/loginscreen.dart';
+import 'package:the_tatto/utils/app_sizes.dart';
 import 'package:the_tatto/viewmodel/auth_view_model.dart';
 
 Widget appbar(BuildContext context, String title, dynamic otherData,bool isBackArrow) {
@@ -78,6 +82,26 @@ Widget appbar(BuildContext context, String title, dynamic otherData,bool isBackA
 }
 void showcancledialog(BuildContext context) {
 
+  showProcessBar(BuildContext context) {
+    AlertDialog alert = AlertDialog(
+        backgroundColor: Color(0x01000000),
+        contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+        content: Container(
+          height: 50,
+          child: SpinKitWave(
+            color: Colors.white,
+            size: AppSizes.appVerticalLg * 0.55,
+          ),
+        ));
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
 
   showDialog(
       context: context,
@@ -96,14 +120,26 @@ void showcancledialog(BuildContext context) {
         );
         Widget continueButton = FlatButton(
           child: Text("Yes",style: TextStyle(color: const Color(0xFFe06287),fontSize: 16,fontWeight: FontWeight.w600,fontFamily: 'Montserrat'),),
-          onPressed:  () {
-            _notifier.getUserLogout();
-           /* if(_notifier.isLogout){
-              print("-------------------ok----------");
+          onPressed:  () async {
+            // SharedPreferences preferences = await SharedPreferences.getInstance();
+            // await preferences.clear();
+
+            // Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+            //     LoginScreen()), (Route<dynamic> route) => false);
+
+           // Navigator.pop(context);
+            showProcessBar(context);
+             await _notifier.getUserLogout();
+            if(_notifier.isLogout){
+              SharedPreferences preferences = await SharedPreferences.getInstance();
+              await preferences.clear();
+              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                  LoginScreen()), (Route<dynamic> route) => false);
+              print("------------------- ok-----------------");
             }else{
               print("-------------------not ok-----------------");
-            }*/
-          //  Navigator.pop(context);
+            }
+
 
           },
         );

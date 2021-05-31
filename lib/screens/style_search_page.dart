@@ -9,10 +9,18 @@ import 'package:the_tatto/common/common_view.dart';
 import 'package:the_tatto/common/customwidget.dart';
 import 'package:the_tatto/drawer/drawer_only.dart';
 import 'package:flutter/material.dart';
+import 'package:the_tatto/screens/location_demo.dart';
 import 'package:the_tatto/utils/app_color.dart';
 import 'package:the_tatto/viewmodel/auth_view_model.dart';
 
 import 'base_scaffold.dart';
+
+import 'package:google_api_headers/google_api_headers.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_google_places/flutter_google_places.dart';
+import 'package:google_maps_webservice/places.dart';
+
+const kGoogleApiKey = "AIzaSyAkwHSqsWDFbqHoOHheYh-W8OMFalqhHBA";
 
 // ignore: must_be_immutable
 class StyleSearchScreen extends StatefulWidget {
@@ -63,6 +71,35 @@ class _TopService extends State<StyleSearchScreen> {
   ];
   bool isResult = false;
   GlobalKey<FormState> locationSearchFormKay = GlobalKey<FormState>();
+  Mode _mode = Mode.overlay;
+  Future<void> _handlePressButton() async {
+    // show input autocomplete with selected mode
+    // then get the Prediction selected
+    Prediction p = await PlacesAutocomplete.show(
+      context: context,
+      apiKey: kGoogleApiKey,
+    //  onError: onError,
+      mode: _mode,
+      language: "fr",
+      // decoration: InputDecoration(
+      //   hintText: 'Search',
+      //   focusedBorder: OutlineInputBorder(
+      //     borderRadius: BorderRadius.circular(20),
+      //     borderSide: BorderSide(
+      //       color: Colors.white,
+      //     ),
+      //   ),
+      // ),
+      components: [Component(Component.country, "fr")],
+    );
+
+    //displayPrediction(p, homeScaffoldKey.currentState);
+  }
+  // void onError(PlacesAutocompleteResponse response) {
+  //   homeScaffoldKey.currentState.showSnackBar(
+  //     SnackBar(content: Text(response.errorMessage)),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -187,20 +224,24 @@ class _TopService extends State<StyleSearchScreen> {
                                     height: 40,
                                     color: Colors.black,
                                     onPressed: () async {
-                                      if (locationSearchFormKay.currentState
-                                          .validate()) {
-                                        locationSearchFormKay.currentState.save();
-                                        if (!isResult) {
-                                          setState(() {
-                                            isResult = true;
-                                            _notifier.getLocationSearchList();
-                                          });
-                                        } else if (isResult) {
-                                          setState(() {
-                                            isResult = false;
-                                          });
-                                        }
-                                      }
+
+                                      _handlePressButton();
+
+
+                                      // if (locationSearchFormKay.currentState
+                                      //     .validate()) {
+                                      //   locationSearchFormKay.currentState.save();
+                                      //   if (!isResult) {
+                                      //     setState(() {
+                                      //       isResult = true;
+                                      //       _notifier.getLocationSearchList();
+                                      //     });
+                                      //   } else if (isResult) {
+                                      //     setState(() {
+                                      //       isResult = false;
+                                      //     });
+                                      //   }
+                                      // }
                                     },
                                     child: Text(
                                       "Search".toUpperCase(),

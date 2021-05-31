@@ -5,10 +5,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_tatto/ResponseModel/AboutData.dart';
 import 'package:the_tatto/ResponseModel/ArtistSearchList.dart';
 import 'package:the_tatto/ResponseModel/StyleList.dart';
+import 'package:the_tatto/constant/preferenceutils.dart';
 import 'package:the_tatto/model/LocationSearchList.dart';
 import 'package:the_tatto/model/ShopSearchList.dart';
 import 'package:the_tatto/utils/app_api_ref.dart';
 import 'package:the_tatto/constant/appconstant.dart';
+import 'package:the_tatto/utils/app_constant.dart';
 import 'dart:convert' as JSON;
 import 'dart:io';
 import 'dart:convert';
@@ -43,8 +45,11 @@ class AuthApi {
 }
 
 class AuthViewModel extends BaseViewModel {
-  String kLoginPreferenceId = "LoginPreferenceId";
-  String kProfilePreferenceId = "profileID";
+  // String kLoginPreferenceId = "LoginPreferenceId";
+  // String kProfilePreferenceId = "profileID";
+  File profileImageFile;
+
+
 
   String signUpUserName,
       signUpEmail,
@@ -57,7 +62,6 @@ class AuthViewModel extends BaseViewModel {
       traditionalStyleSearchValue,
       locationSearchListValue,
       shopSearchValue,
-      loginResponseSharePreference,
       profileResponseSharePreference,
       appointDateSelect,
       forgetEmail,
@@ -80,6 +84,7 @@ class AuthViewModel extends BaseViewModel {
   bool isProfileIn = false;
   bool isLogout = false;
   bool isStyleList = false;
+  //bool isUpcomingAppointment = false;
   bool isArtistList = false;
   bool isLocationSearchList = false;
   bool isAboutDataList = false;
@@ -110,7 +115,7 @@ class AuthViewModel extends BaseViewModel {
   List<ShopSearchList> shopSearchList;
   List<LocationSearchList> locationSearchList;
   List<AboutData> aboutDataList;
-  int totalPrice=0;
+  double totalPrice=0;
 
 
   // GlobalKey<FormState> signInForm = GlobalKey<FormState>();
@@ -136,19 +141,25 @@ class AuthViewModel extends BaseViewModel {
           "------------------Email: $signInEmail  Password: $signInPassword --------------");
       final response = await http.post(kSignInApi, body: {"email": signInEmail, "password": signInPassword});
       var body = json.decode(response.body);
-      print("-----------------lkads${response.statusCode}------------------");
+      print("-----------------statusCode:${response.statusCode}------------------");
       print("-----------------$body------------------");
       if (response.statusCode == 200) {
+       // print("-----------------klsfdgjld------------------");
         isSignIn = true;
         setState(ViewState.kIdle);
-        prefs.setString(kLoginPreferenceId, json.encode(body));
-        loginResponseSharePreference = prefs.getString(kLoginPreferenceId);
+          prefs.setInt(kLoginUserId, body['response']['id']);
+         prefs.setString(kLoginRefreshToken, body['response']['tokens']['refresh']);
+         prefs.setString(kLoginAccessToken, body['response']['tokens']['access']);
+        getProfile(body['response']['id']);
+       print("--------------------kLoginUserId:  ${prefs.getInt(kLoginUserId)}------");
+       print("--------------------kLoginRefreshToken: ${prefs.getString(kLoginRefreshToken)}-----------");
+       print("--------------------kLoginAccessToken:  ${prefs.getString(kLoginAccessToken)}-----------");
         authError = false;
         authMsg = "Login Successfully";
         // //   authMsg = body['message'];
       } else {
         authError = true;
-      //  authMsg = body['detail'];
+        authMsg ="${body['error']}";
        // print("-------------------Sign  in not success ${authMsg = body['detail']}----------------");
       }
       // }
@@ -178,7 +189,6 @@ class AuthViewModel extends BaseViewModel {
       print("-----------------$body------------------");
       if (!body['error']) {
         print("-----------------$body------------------");
-        prefs.setString(kLoginPreferenceId, json.encode(body));
         setState(ViewState.kIdle);
         isSignUp = true;
         authError = false;
@@ -187,7 +197,7 @@ class AuthViewModel extends BaseViewModel {
           prefs.setBool(kIsLogin, true);*/
       } else {
         authError = true;
-        authMsg = body['message'];
+        authMsg = "${body['error']}";
         print(
             "-------------------Sign up not success ${authMsg = body['message']}----------------");
       }
@@ -205,17 +215,17 @@ class AuthViewModel extends BaseViewModel {
     setState(ViewState.kIdle);
   }
   Future<void> validateAndSubmitForget() async {
-    //final SharedPreferences prefs = await SharedPreferences.getInstance();
+    isForget = false;
     setState(ViewState.kBusy);
     try {
       // if (validateAndSave(formstate: signUpForm.currentState)) {
       print("------------------Email: $forgetEmail--------------");
-      final response = await http.post(kSignUpApi, body: {
+      final response = await http.post(kForgetPasswordApi, body: {
         "email": forgetEmail,
       });
       var body = json.decode(response.body);
       print("-----------------$body------------------");
-      if (body['status']) {
+      if (response.statusCode ==200) {
         print("-----------------$body------------------");
         setState(ViewState.kIdle);
         isForget = true;
@@ -226,8 +236,7 @@ class AuthViewModel extends BaseViewModel {
       } else {
         authError = true;
         authMsg = body['message'];
-        print(
-            "-------------------Sign up not success ${authMsg = body['message']}----------------");
+        print("-------------------Sign up not success ${authMsg = body['message']}----------------");
       }
       /*   } else {
         authMsg = "Please fill all field";
@@ -243,35 +252,34 @@ class AuthViewModel extends BaseViewModel {
     setState(ViewState.kIdle);
   }
   Future<void> getUserLogout() async {
-    String strTokenRefresh =
-        json.decode(loginResponseSharePreference)['tokens']["refresh"];
+   // String token="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYyMjEwMTc4MCwianRpIjoiYTk5OWNhMmQ1OTc5NDQzNTg4NTc4OTliZGIxY2RhMWEiLCJ1c2VyX2lkIjozfQ.NpdbGrcTfmVCJvNc7x_9-KJcLDbRBxRpVSzFv8pdh5Y";
+   print("----------------------${PreferenceUtils.getString(kLoginRefreshToken)}--------------");
+  //  print("-----------------token $token------------------");
+
     setState(ViewState.kBusy);
     try {
-      print("------------------refresh:$strTokenRefresh--------------");
       final response = await http
-          .post("https://tattooarts.herokuapp.com/auth/logout/", body: {
-        "refresh":
-            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYyMTU3Mzc1NywianRpIjoiNDFjZWE1M2U2NzMxNDdmNjg5ZTQyM2U5ZGY4Y2MyODYiLCJ1c2VyX2lkIjoyfQ.epIN3p76YgB_nJTbhQeY4kemkFz0xSt6lp81EKVMGIE"
+          .post(kLogoutApi, body: {
+        "refresh": "${PreferenceUtils.getString(kLoginRefreshToken)}"
+        //"refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYyMjEwMzA1MCwianRpIjoiZmMyNDMxYjI3NTI1NDc4MDhmZTdlODlkZDNmZWJhZWYiLCJ1c2VyX2lkIjozfQ.i5F9uZIRbqD3Fcf6KpnlQySXefAmlj_anGRrOKC41Rg"
       });
       var body = json.decode(response.body);
-      print("-----------------logout $body------------------");
-      /* if (!body['error']) {
+      print("-----------------status ${response.statusCode}------------------");
+     print("-----------------logout $body------------------");
+       if (response.statusCode ==200) {
         setState(ViewState.kIdle);
         isLogout = true;
         authError = false;
-        authMsg = body['message'];
+        authMsg = "Logout Successfully";
       } else {
         authError = true;
-        authMsg = body['detail'];
+        authMsg = "Logout error";
         print(
             "-------------------Sign  in not success ${authMsg = body['message']}----------------");
-      }*/
-
-      print("not success");
+      }
       authError = false;
     } catch (e) {
-      print(
-          "-------------------Sign  in not success ${e.message.toString()}----------------");
+      print("-------------------Sign  in not success ${e.message.toString()}----------------");
       authMsg = "Error ${e.message.toString()}";
       authError = true;
     }
@@ -298,13 +306,10 @@ class AuthViewModel extends BaseViewModel {
         // authMsg = body['message'];
         //   prefs.setString(kLoginId, json.encode(body));
         //   prefs.setBool(kIsLogin, true);
-        prefs.setString(kLoginPreferenceId, json.encode(body));
-        loginResponseSharePreference = prefs.getString(kLoginPreferenceId);
       } else {
         authError = true;
         // authMsg = body['message'];
-        print(
-            "-------------------Sign  in not success ${authMsg = body['message']}----------------");
+        print("-------------------Sign  in not success ${authMsg = body['message']}----------------");
       }
 
       print("not success");
@@ -446,10 +451,10 @@ class AuthViewModel extends BaseViewModel {
     print("-----------------aboutDataID $aboutDataID------------------");
     setState(ViewState.kBusy);
     try {
-    // final response = await http.get("https://tattooarts.herokuapp.com/Shop_artist/$aboutDataID");
-      final response = await http.get("https://tattooarts.herokuapp.com/Shop_artist/1");
+     final response = await http.get("https://tattooarts.herokuapp.com/Shop_artist/$aboutDataID");
+     // final response = await http.get("https://tattooarts.herokuapp.com/Shop_artist/1");
       var body = json.decode(response.body);
-      //  print("-----------------$body------------------");
+        print("-----------------$body------------------");
       if (body != null) {
         print("-----------------Response : ${response.body}------------------");
 
@@ -481,11 +486,11 @@ class AuthViewModel extends BaseViewModel {
     }
     setState(ViewState.kIdle);
   }
-  Future<void> priceAdd(int price) async {
+  Future<void> priceAdd(double price) async {
     totalPrice +=price;
     notifyListeners();
   }
-  Future<void> priceSub(int price) async {
+  Future<void> priceSub(double price) async {
     totalPrice -=price;
     notifyListeners();
   }
@@ -493,7 +498,7 @@ class AuthViewModel extends BaseViewModel {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     print("-----------------$traditionalStyleSearchValue------------------");
-    isStyleList = false;
+  //  isStyleList = false;
     setState(ViewState.kBusy);
     try {
       final response = await http.get("https://tattooarts.herokuapp.com/auth/get_user/$id");
@@ -507,7 +512,7 @@ class AuthViewModel extends BaseViewModel {
         //   prefs.setString(kLoginId, json.encode(body));
         //   prefs.setBool(kIsLogin, true);
         prefs.setString(kProfilePreferenceId, json.encode(body));
-        profileResponseSharePreference = prefs.getString(kProfilePreferenceId);
+
         print("-----------------${json.decode(profileResponseSharePreference)['username']}------------------");
         print("-----------------profileResponseSharePreference $profileResponseSharePreference------------------");
       } else {
@@ -527,17 +532,29 @@ class AuthViewModel extends BaseViewModel {
     }
     setState(ViewState.kIdle);
   }
-
-
-  Future<void> validateAndSubmitProfile() async {
+  Future<void> validateAndSubmitProfile(int id) async {
+    setState(ViewState.kBusy);
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     try {
+
       //  if (validateAndSave(formstate: signInForm.currentState)) {
+
       print(
-          "------------------validateAndSubmitProfile: $profileNewName  --------------");
-      final response = await http.put("https://tattooarts.herokuapp.com/auth/update_user/1/", body: {"username": profileNewName, "image":""});
-      var body = json.decode(response.body);
-      print("-----------------$body------------------");
+          "------------------id $id validateAndSubmitProfile: $profileNewName  ,profileImageFile :$profileImageFile--------------");
+      final file = await http.MultipartFile.fromPath('image',profileImageFile.path );
+      final imageUploadRequest =
+      http.MultipartRequest('PUT', Uri.parse("https://tattooarts.herokuapp.com/auth/update_user/$id/"));
+      imageUploadRequest.fields['username'] = "$profileNewName";
+
+      imageUploadRequest.files.add(file);
+      final streamedResponse = await imageUploadRequest.send();
+      final response = await http.Response.fromStream(streamedResponse);
+    //  final response = await http.put(, body: {"username": profileNewName, "image":profileImageFile});
+      print("-----------------${response.statusCode}------------------");
+
+     var body = json.decode(response.body);
+   //  print("-----------------$body------------------");
       if (response.statusCode == 200) {
         isProfileIn= true;
         // setState(ViewState.kIdle);
@@ -546,6 +563,7 @@ class AuthViewModel extends BaseViewModel {
         // authError = false;
         // authMsg = "Login Successfully";
         print("-----------------dfaskljfalldks------------------");
+        prefs.setString(kProfilePreferenceId, json.encode(body));
         // //   authMsg = body['message'];
       } else {
         authError = true;
@@ -562,5 +580,39 @@ class AuthViewModel extends BaseViewModel {
     }
     setState(ViewState.kIdle);
   }
+
+  // Future<void> getUpcomingAppointment() async {
+  //   print("-----------------${PreferenceUtils.getString(kLoginAccessToken)}------------------");
+  //   isUpcomingAppointment = false;
+  //   setState(ViewState.kBusy);
+  //   try {
+  //     final response = await http.get(kGetAppointmentApi,headers:{
+  //     'Content-Type': 'application/json',
+  //     'Accept': 'application/json',
+  //     'Authorization': 'Bearer ${PreferenceUtils.getString(kLoginAccessToken)}',
+  //     });
+  //     //final response = await http.get("https://tattooarts.herokuapp.com/auth/get_user/5");
+  //     var body = json.decode(response.body);
+  //     print("-----------------$body------------------");
+  //     if (response.statusCode ==200) {
+  //       isUpcomingAppointment = true;
+  //
+  //     } else {
+  //       authError = true;
+  //       // authMsg = body['message'];
+  //       print(
+  //           "-------------------Sign  in not success ${authMsg = body['message']}----------------");
+  //     }
+  //
+  //     print("not success");
+  //     authError = false;
+  //   } catch (e) {
+  //     //print("-------------------Sign  in not success ${e.message.toString()}----------------");
+  //     authMsg = "Error ";
+  //     // authMsg = "Error ${e.message.toString()}";
+  //     authError = true;
+  //   }
+  //   setState(ViewState.kIdle);
+  // }
 
 }

@@ -206,6 +206,7 @@ class _FgHome extends State<FgHome> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+
                   Container(
                     margin: EdgeInsets.only(right: 20, left: 20),
                     padding: EdgeInsets.symmetric(horizontal: 20),
@@ -226,6 +227,7 @@ class _FgHome extends State<FgHome> {
                             fontSize: 14.0,
                             color: Colors.black,
                             fontWeight: FontWeight.w600,
+
                             fontFamily: 'Montserrat'),
                      //   readOnly: true,
                         onSaved: (String value) {
@@ -240,7 +242,8 @@ class _FgHome extends State<FgHome> {
                           contentPadding:
                               EdgeInsets.only(top: 0, bottom: 0, left: 10),
                           suffixIcon: InkWell(
-                            onTap: () {
+                            onTap: ()  {
+
                               if (traditionalStyleForm.currentState
                                   .validate()) {
                                 traditionalStyleForm.currentState.save();
@@ -314,7 +317,10 @@ class _FgHome extends State<FgHome> {
                                     ),
                                   ),
                                 ):ListView.builder(
-                                    shrinkWrap: true,
+                                  shrinkWrap: true,
+                                  reverse: true,
+                                  physics: NeverScrollableScrollPhysics(),
+
                                     itemBuilder:
                                         (BuildContext context, int index) {
                                       return StyleSearchItems(
@@ -459,7 +465,11 @@ class _FgHome extends State<FgHome> {
                                         )
                                       : ListView.builder(
                                           shrinkWrap: true,
-                                          itemBuilder: (BuildContext context,
+                                    reverse: true,
+                                    physics: NeverScrollableScrollPhysics(),
+
+
+                                    itemBuilder: (BuildContext context,
                                               int index) {
                                             return TopServiceDataNew(
                                               category: _notifier
@@ -618,7 +628,10 @@ class _FgHome extends State<FgHome> {
                                           ),
                                         )
                                       : ListView.builder(
-                                          shrinkWrap: true,
+                                    shrinkWrap: true ,
+                                    reverse: true,
+                                    physics: NeverScrollableScrollPhysics(),
+
                                           itemBuilder: (BuildContext context,
                                               int index) {
                                             return TopServiceDataNew(
